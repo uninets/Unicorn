@@ -35,12 +35,11 @@ class Unicorn::Proc::Table {
     # TODO: ignore unicorn processes that are not daemonized
     method _parse_ps {
         my @users;
-        my $trash;
 
         # grab the process table of unicorn_rails processes
         # build tree skeleton
         for ( qx[ ps fauxn | grep unicorn_rails |grep -v grep ] ){
-            ( $trash, my $user, my $pid ) = split /\s+/, $_;
+            ( undef, my $user, my $pid ) = split /\s+/, $_;
             push @users, { $user => $pid };
         }
 
@@ -60,7 +59,7 @@ class Unicorn::Proc::Table {
             while (<$fh>){
 
                 if ($_ =~ /PPid:\t\d+/){
-                    my ( $trash, $parent_pid ) = split /\s+/, $&;
+                    my ( undef, $parent_pid ) = split /\s+/, $&;
 
                     # ppid not equal to 1 means the process is a worker
                     # or a new master
@@ -70,7 +69,7 @@ class Unicorn::Proc::Table {
                         while (<$parent_fh>){
 
                             if ($_ =~ /PPid:\t\d+/){
-                                ( $trash, my $parent_parent_pid )
+                                ( undef, my $parent_parent_pid )
                                     = split /\s+/, $&;
 
                                 # pppid not equal to one means the process
