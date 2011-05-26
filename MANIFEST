@@ -1,0 +1,16 @@
+Changes
+MANIFEST
+Makefile.PL
+README
+script/unicorn.pl
+lib/Unicorn.pm
+lib/Unicorn/Proc.pm
+lib/Unicorn/Types.pm
+t/00-load.t
+t/01-interface.t
+t/02-unicorn-proc-table.t
+t/03-unicorn-proc.t
+t/manifest.t
+t/pod-coverage.t
+t/pod.t
+script/unicorn.pl
