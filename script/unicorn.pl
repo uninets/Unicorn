@@ -130,3 +130,5 @@ else {
     die "No such action\n";
 }
 
+exit 0;
+

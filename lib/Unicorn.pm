@@ -71,7 +71,7 @@ class Unicorn {
                 $ENV{'RAILS_ENV'} = 'production';
 
                 # spawn the unicorn
-                exec "/bin/bash --login -i -c \"unicorn_rails -c $conf_file $argstring\"";
+                exec "/bin/bash --login -c \"unicorn_rails -c $conf_file $argstring\"";
             }
         }
         else {
