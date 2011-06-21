@@ -98,6 +98,10 @@ if ($action eq 'show'){
     exit 0;
 }
 
+if ($> > 0){
+    $user = getpwuid $> unless $user;
+}
+
 unless ( $user && $action ) {
     print $HELP;
     die "Missing arguments. username and action are required\n";
