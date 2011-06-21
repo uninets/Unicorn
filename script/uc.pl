@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use v5.0010;
 use Getopt::Long;
 
 use Unicorn;
@@ -80,8 +81,16 @@ if ($action eq 'show'){
 
         for my $master (keys %{$pidref}){
             print "    master: $master\n";
-            for (@{$pidref->{$master}}){
-                print "        worker: $_\n";
+            for my $worker (@{$pidref->{$master}}){
+                if (ref($worker) ~~ 'HASH'){
+                    for (keys %$worker){
+                        print "        new master: " . $_ . "\n";
+                        print "            new worker: $_\n" for @{$worker->{$_}}
+                    }
+                }
+                else {
+                    print "        worker: $worker\n";
+                }
             }
         }
     }
