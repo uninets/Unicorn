@@ -70,10 +70,21 @@ if ($action eq 'show'){
         DEBUG => $DEBUG,
     );
 
-    my $href = $uc->proc->process_table->ptable;
+    my $uidref = $uc->proc->process_table->ptable;
 
-    use YAML;
-    print Dump $href;
+    for (keys %{$uidref}){
+        my $username = getpwuid $_;
+        my $pidref = $uidref->{$_};
+
+        print "$username:\n";
+
+        for my $master (keys %{$pidref}){
+            print "    master: $master\n";
+            for (@{$pidref->{$master}}){
+                print "        worker: $_\n";
+            }
+        }
+    }
 
     exit 0;
 }
