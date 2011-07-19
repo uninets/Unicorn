@@ -2,7 +2,7 @@ Changes
 MANIFEST
 Makefile.PL
 README
-script/unicorn.pl
+script/uc.pl
 lib/Unicorn.pm
 lib/Unicorn/Proc.pm
 lib/Unicorn/Types.pm
@@ -13,4 +13,3 @@ t/03-unicorn-proc.t
 t/manifest.t
 t/pod-coverage.t
 t/pod.t
-script/unicorn.pl

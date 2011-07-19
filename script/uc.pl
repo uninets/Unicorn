@@ -13,7 +13,7 @@ Synopsis
 
 Options
     -u, --user
-        username of unicorns owner
+        username of unicorns owner (can be ommited if user is not root)
     -a, --action
         action to perform, see section Actions for valid actions
     -c, --config
@@ -28,7 +28,7 @@ Options
 
 Actions
     show
-        dumps a YAML structure of user ids and the process ids of masters
+        dumps a structure of user ids and the process ids of masters
         and their children
     start
         starts a users unicorn server, requires --config to be specified
@@ -44,10 +44,10 @@ Actions
         removes a unicorn worker
 
 Examples
-    unicorn.pl -a show
-    unicorn.pl -u railsuser -a start -c /home/railsuser/app/unicorn.rb --args "--listen 0.0.0.0:80, -D"
-    unicorn.pl -u railsuser -a restart --debug
-    unicorn.pl -u railsuser -a add_worker
+    uc.pl -a show
+    uc.pl -u railsuser -a start -c /home/railsuser/app/unicorn.rb --args "--listen 0.0.0.0:80, -D"
+    uc.pl -u railsuser -a restart
+    uc.pl -u railsuser -a add_worker
 
 END
 
