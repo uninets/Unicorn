@@ -5,7 +5,7 @@ class Unicorn {
     use Carp;           # for sane error reporting
     use File::Basename; # to strip the config file from the path
 
-    our $VERSION = '0.02.30';
+    our $VERSION = '0.02.32';
 
     use Unicorn::Proc;
 
