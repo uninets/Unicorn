@@ -2,29 +2,14 @@
 
 use strict;
 use warnings;
-use v5.0010;
+use 5.012;
 use Getopt::Long;
 
 use Unicorn;
 
 my $HELP = <<'END';
 Synopsis
-    unicorn.pl [options]
-
-Options
-    -u, --user
-        username of unicorns owner (can be ommited if user is not root)
-    -a, --action
-        action to perform, see section Actions for valid actions
-    -c, --config
-        path to the unicorn config file
-    --args
-        optional additional arguments used with action 'start'
-        overrides options of the config file
-        see section Examples for proper usage
-        "-D" is an additional argument you most likely want to provide
-    --debug
-        flag to enable debug output
+    unicorn.pl [action] [options]
 
 Actions
     show
@@ -43,22 +28,34 @@ Actions
     rm_worker
         removes a unicorn worker
 
+Options
+    -u, --user
+        username of unicorns owner (can be ommited if user is not root)
+    -c, --config
+        path to the unicorn config file
+    --args
+        optional additional arguments used with action 'start'
+        overrides options of the config file
+        see section Examples for proper usage
+        "-D" is an additional argument you most likely want to provide
+    --debug
+        flag to enable debug output
+
 Examples
-    uc.pl -a show
-    uc.pl -u railsuser -a start -c /home/railsuser/app/unicorn.rb --args "--listen 0.0.0.0:80, -D"
-    uc.pl -u railsuser -a restart
-    uc.pl -u railsuser -a add_worker
+    uc.pl show
+    uc.pl start -u railsuser -c /home/railsuser/app/unicorn.rb --args "--listen 0.0.0.0:80, -D"
+    uc.pl restart -u railsuser
+    uc.pl add_worker
 
 END
 
-my $action;
+my $action = shift || 'show';
 my $user;
 my $config;
-my $args;
+my $args = undef;
 my $DEBUG = 0;
 
 my $result = GetOptions(
-    'action|a=s' => \$action,
     'user|u=s'   => \$user,
     'config|c=s' => \$config,
     'args=s'     => \$args,
@@ -108,6 +105,9 @@ unless ( $user && $action ) {
 }
 
 my $arg_ref = [];
+
+# make -D default as most of the time you will want to start Unicorn as daemon
+$args = "-D" unless defined $args;
 
 $arg_ref = [ split ',', $args ] if $args;
 

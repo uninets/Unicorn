@@ -43,7 +43,7 @@ Report bugs at:
 
 =item * unicorn.pl issue tracker
 
-L<http://redmine.uninets.eu/projects/unicorn-pl/issues>
+L<https://github.com/mugenken/Unicorn/issues>
 
 =item * support at uninets.eu
 

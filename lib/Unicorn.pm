@@ -287,12 +287,13 @@ See perldoc Unicon::Config for more information.
 Is a Bool type attribute. Defaults to 'false' and prints additional
 information if set 'true'.
 
+TODO: Needs to be improved.
+
 =head2 Contruction
 
     my $unicorn = Unicorn->new(
         username => 'myuser',
         group    => 'mygroup',
-        DEBUG    => 1,          # enable debug output
     );
 
 =head1 METHODS
@@ -381,9 +382,9 @@ Report bugs at:
 
 =over 2
 
-=item * unicorn.pl issue tracker
+=item * Unicorn issue tracker
 
-L<http://redmine.uninets.eu/projects/unicorn-pl/issues>
+L<https://github.com/mugenken/Unicorn/issues>
 
 =item * support at uninets.eu
 
