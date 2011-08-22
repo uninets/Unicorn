@@ -2,8 +2,6 @@ use MooseX::Declare;
 
 class Unicorn::Types {
 
-
-    our $VERSION = '0.01';
     use Moose::Util::TypeConstraints;
 
     subtype 'AbsPath'
