@@ -3,10 +3,10 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-    NAME                => 'Unicorn',
+    NAME                => 'Unicorn::Manager',
     AUTHOR              => q{Mugen Kenichi <mugen.kenichi@uninets.eu>},
-    VERSION_FROM        => 'lib/Unicorn.pm',
-    ABSTRACT_FROM       => 'lib/Unicorn.pm',
+    VERSION_FROM        => 'lib/Unicorn/Manager.pm',
+    ABSTRACT_FROM       => 'lib/Unicorn/Manager.pm',
     INST_SCRIPT         => 'script/',
     ($ExtUtils::MakeMaker::VERSION >= 6.3002
       ? ('LICENSE'=> 'proprietary')

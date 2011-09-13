@@ -3,9 +3,9 @@ MANIFEST
 Makefile.PL
 README
 script/uc.pl
-lib/Unicorn.pm
-lib/Unicorn/Proc.pm
-lib/Unicorn/Types.pm
+lib/Unicorn/Manager.pm
+lib/Unicorn/Manager/Proc.pm
+lib/Unicorn/Manager/Types.pm
 t/00-load.t
 t/01-interface.t
 t/02-unicorn-proc-table.t

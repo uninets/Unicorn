@@ -129,12 +129,12 @@ class Unicorn::Manager::Proc::Table {
     }
 }
 
-class Unicorn::Proc {
-    has process_table => ( is => 'rw', isa => 'Unicorn::Proc::Table' );
+class Unicorn::Manager::Proc {
+    has process_table => ( is => 'rw', isa => 'Unicorn::Manager::Proc::Table' );
     has newest_master => ( is => 'rw', isa => 'ArrayRef[Num]' );
 
     method BUILD {
-        $self->process_table(Unicorn::Proc::Table->new);
+        $self->process_table(Unicorn::Manager::Proc::Table->new);
     }
 
     method refresh {

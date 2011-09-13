@@ -13,7 +13,7 @@ class Unicorn::Manager {
     has group    => ( is => 'rw', isa => 'Str' );
     has config   => ( is => 'rw', isa => 'HashRef' );
     has DEBUG    => ( is => 'rw', isa => 'Bool', default => 0 );
-    has proc     => ( is => 'rw', isa => 'Unicorn::Proc' );
+    has proc     => ( is => 'rw', isa => 'Unicorn::Manager::Proc' );
     has uid      => ( is => 'rw', isa => 'Num' );
     has rails    => ( is => 'rw', isa => 'Bool', default => 0 );
 
@@ -138,7 +138,7 @@ class Unicorn::Manager {
         # TODO
         # should return a config object
         #
-        # all config related stuff should go into a seperate class anyway: Unicorn::Config
+        # all config related stuff should go into a seperate class anyway: Unicorn::Manager::Config
         return 0;
     }
 
@@ -151,7 +151,7 @@ class Unicorn::Manager {
         #
         # should return a string. could be written to file or screen.
         #
-        # all config related stuff should go into a seperate class anyway: Unicorn::Config
+        # all config related stuff should go into a seperate class anyway: Unicorn::Manager::Config
         return 0;
     }
 
@@ -236,7 +236,7 @@ class Unicorn::Manager {
         croak "no such username\n" unless getpwnam($self->username);
 
         $self->uid((getpwnam($self->username))[2]);
-        $self->proc(Unicorn::Proc->new) unless $self->proc;
+        $self->proc(Unicorn::Manager::Proc->new) unless $self->proc;
 
     }
 }
@@ -256,7 +256,7 @@ The Unicorn class provides methods to start, stop and gracefully restart
 the server. You can add and remove workers on the fly.
 
 TODO:
-Unicorn::Config should provide methods to create config files and offer an
+Unicorn::Manager::Config should provide methods to create config files and offer an
 OO interface to the config object.
 
 Until now only unicorn_rails is supported. This Lib is a quick hack to
