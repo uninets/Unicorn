@@ -1,13 +1,13 @@
 use MooseX::Declare;
 
-class Unicorn {
+class Unicorn::Manager {
 
     use Carp;           # for sane error reporting
     use File::Basename; # to strip the config file from the path
 
     our $VERSION = '0.02.32';
 
-    use Unicorn::Proc;
+    use Unicorn::Manager::Proc;
 
     has username => ( is => 'rw', isa => 'Str', required => 1 );
     has group    => ( is => 'rw', isa => 'Str' );
@@ -15,6 +15,7 @@ class Unicorn {
     has DEBUG    => ( is => 'rw', isa => 'Bool', default => 0 );
     has proc     => ( is => 'rw', isa => 'Unicorn::Proc' );
     has uid      => ( is => 'rw', isa => 'Num' );
+    has rails    => ( is => 'rw', isa => 'Bool', default => 0 );
 
     method start ( Str :config($config_file), ArrayRef :$args? ) {
         my $timeout = 20;
@@ -27,7 +28,7 @@ class Unicorn {
                     $spawned = 1 if $self->proc->process_table->ptable->{$self->uid};
                     $timeout--;
                 }
-                croak "Failed to start unicorn_rails. Timed out.\n" if $timeout <= 0;
+                croak "Failed to start unicorn. Timed out.\n" if $timeout <= 0;
 
             }
             else {
@@ -71,13 +72,20 @@ class Unicorn {
                 $ENV{'RAILS_ENV'} = 'production';
 
                 # spawn the unicorn
-                exec "/bin/bash --login -c \"unicorn_rails -c $conf_file $argstring\"";
+                if ($self->rails){
+                    # start unicorn_rails
+                    exec "/bin/bash --login -c \"unicorn_rails -c $conf_file $argstring\"";
+                }
+                else {
+                    # start unicorn
+                    exec "/bin/bash --login -c \"unicorn -c $conf_file $argstring\"";
+                }
             }
         }
         else {
-            # return "no such file" or similar
+            return 0;
         }
-        return 0;
+        return 1;
     }
 
     method stop {

@@ -1,6 +1,6 @@
 use MooseX::Declare;
 
-class Unicorn::Types {
+class Unicorn::Manager::Types {
 
     use Moose::Util::TypeConstraints;
 

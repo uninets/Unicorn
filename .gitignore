@@ -2,3 +2,4 @@
 .bzrignore
 Makefile.old
 blib/
+*.swp

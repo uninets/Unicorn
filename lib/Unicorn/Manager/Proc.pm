@@ -1,6 +1,6 @@
 use MooseX::Declare;
 
-class Unicorn::Proc::Table {
+class Unicorn::Manager::Proc::Table {
     use autodie;
 
     has ptable => ( is => 'rw', isa => 'HashRef' );

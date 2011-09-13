@@ -5,11 +5,11 @@ use warnings;
 use 5.012;
 use Getopt::Long;
 
-use Unicorn;
+use Unicorn::Manager;
 
-my $HELP = <<'END';
+my $HELP = <<"END";
 Synopsis
-    unicorn.pl [action] [options]
+    $0 [action] [options]
 
 Actions
     show
@@ -54,12 +54,14 @@ my $user;
 my $config;
 my $args = undef;
 my $DEBUG = 0;
+my $rails = 1;
 
 my $result = GetOptions(
     'user|u=s'   => \$user,
     'config|c=s' => \$config,
     'args=s'     => \$args,
     'debug'      => \$DEBUG,
+    'rails'      => \$rails,
 );
 
 if ($action eq 'show'){
@@ -113,6 +115,7 @@ $arg_ref = [ split ',', $args ] if $args;
 
 my $unicorn = Unicorn->new(
     username => $user,
+    rails    => $rails,
     DEBUG    => $DEBUG,
 );
 
@@ -122,32 +125,32 @@ if ( $action eq 'start' ) {
         die "Action 'start' requires a config file.\n";
     }
     if ($DEBUG) {
-        print "\$unicorn->start( config => \$config, args => \$arg_ref )\n";
-        print " -> \$config => $config\n";
+        say "\$unicorn->start( config => \$config, args => \$arg_ref )";
+        say " -> \$config => $config";
         use Data::Dumper;
-        print " -> \$arg_ref => " . Dumper($arg_ref);
+        say " -> \$arg_ref => " . Dumper($arg_ref);
     }
     $unicorn->start( config => $config, args => $arg_ref );
 }
 elsif ( $action eq 'stop' ) {
-    print "\$unicorn->stop()\n" if $DEBUG;
+    say "\$unicorn->stop()" if $DEBUG;
     $unicorn->stop();
 
 }
 elsif ( $action eq 'restart' ) {
-    print "\$unicorn->restart( mode => 'graceful' )\n" if $DEBUG;
+    say "\$unicorn->restart( mode => 'graceful' )" if $DEBUG;
     $unicorn->restart( mode => 'graceful' );
 }
 elsif ( $action eq 'reload' ) {
-    print "\$unicorn->reload()\n" if $DEBUG;
+    say "\$unicorn->reload()" if $DEBUG;
     $unicorn->reload();
 }
 elsif ( $action eq 'add_worker' ) {
-    print "\$unicorn->add_worker( num => 1 )\n" if $DEBUG;
+    say "\$unicorn->add_worker( num => 1 )" if $DEBUG;
     $unicorn->add_worker( num => 1 );
 }
 elsif ( $action eq 'rm_worker' ) {
-    print "\$unicorn->remove_worker( num => 1 )\n" if $DEBUG;
+    say "\$unicorn->remove_worker( num => 1 )" if $DEBUG;
     $unicorn->remove_worker( num => 1 );
 }
 else {

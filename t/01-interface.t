@@ -8,12 +8,12 @@ my @methods = ( 'start', 'stop', 'restart', 'read_config', 'write_config' );
 my @attributes = ( 'username', 'group', 'config', 'DEBUG' );
 
 BEGIN {
-    use_ok 'Unicorn';
+    use_ok 'Unicorn::Manager';
 }
 
-ok ( my $unicorn = Unicorn->new( username => 'nobody' ));
+ok ( my $unicorn = Unicorn::Manager->new( username => 'nobody' ));
 
-isa_ok ( $unicorn, 'Unicorn' );
+isa_ok ( $unicorn, 'Unicorn::Manager' );
 
 for (@attributes){
     has_attribute_ok ( $unicorn, $_ );
