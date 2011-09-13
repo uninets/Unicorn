@@ -1,8 +1,7 @@
 #!/usr/bin/perl
 
-use strict;
-use warnings;
 use 5.012;
+use warnings;
 use Getopt::Long;
 
 use Unicorn::Manager;
