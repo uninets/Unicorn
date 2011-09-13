@@ -244,7 +244,7 @@ class Unicorn::Manager {
 
 =head1 NAME
 
-Unicorn - A Perl interface to the Unicorn webserver
+Unicorn::Manager - A Perl interface to the Unicorn webserver
 
 =head1 VERSION
 
@@ -252,27 +252,28 @@ Version 0.02
 
 =head1 SYNOPSIS
 
-The Unicorn class provides methods to start, stop and gracefully restart
-the server. You can add and remove workers on the fly.
+The Unicorn::Manager module aimes to provide methods to start, stop and
+gracefully restart the server. You can add and remove workers on the fly.
 
 TODO:
-Unicorn::Manager::Config should provide methods to create config files and offer an
-OO interface to the config object.
+Unicorn::Manager::Config should provide methods to create config files and
+offer an OO interface to the config object.
 
-Until now only unicorn_rails is supported. This Lib is a quick hack to
-integrate management of rails apps with rvm and unicorn into perl scripts.
+Until now basically only unicorn_rails is supported. This Lib is a quick hack
+to integrate management of rails apps with rvm and unicorn into perl scripts.
 
 Also some assumption are made about your environment:
+    you use Linux (the module relies on /proc)
     you use the bash shell
-    your unicorn config is located in your rails apps root directory
-    every user is running one single rails application
+    your unicorn config is located in your apps root directory
+    every user is running one single application
 
 I will add and improve what is needed though. Requests and patches are
 welcome.
 
 =head1 ATTRIBUTES/CONSTRUCTION
 
-Unicorn has following attributes:
+Unicorn::Manager has following attributes:
 
 =head2 username
 

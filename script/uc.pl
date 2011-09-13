@@ -40,6 +40,8 @@ Options
         "-D" is an additional argument you most likely want to provide
     --debug
         flag to enable debug output
+    --rails
+        defaults to 1 for now. so it has no effect at all
 
 Examples
     uc.pl show
@@ -65,7 +67,7 @@ my $result = GetOptions(
 );
 
 if ($action eq 'show'){
-    my $uc = Unicorn->new(
+    my $uc = Unicorn::Manager->new(
         username => 'nobody',
         DEBUG => $DEBUG,
     );
@@ -113,7 +115,7 @@ $args = "-D" unless defined $args;
 
 $arg_ref = [ split ',', $args ] if $args;
 
-my $unicorn = Unicorn->new(
+my $unicorn = Unicorn::Manager->new(
     username => $user,
     rails    => $rails,
     DEBUG    => $DEBUG,

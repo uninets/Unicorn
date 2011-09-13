@@ -4,4 +4,4 @@ BEGIN {
     use_ok( 'Unicorn::Manager' ) || print "Bail out!";
 }
 
-diag( "Testing Unicorn $Unicorn::Manager::VERSION, Perl $], $^X" );
+diag( "Testing Unicorn::Manager $Unicorn::Manager::VERSION, Perl $], $^X" );

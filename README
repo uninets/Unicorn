@@ -1,6 +1,9 @@
 Unicorn
 
-The Unicorn module provides an interface to the Unicorn webserver.
+THIS IS A DEVELOPMENT RELEASE NOT READY FOR PRODUCTION!
+
+The Unicorn::Manager module aimes to provide an interface to the Unicorn
+webserver.
 
 INSTALLATION
 
