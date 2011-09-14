@@ -8,6 +8,7 @@ WriteMakefile(
     VERSION_FROM        => 'lib/Unicorn/Manager.pm',
     ABSTRACT_FROM       => 'lib/Unicorn/Manager.pm',
     INST_SCRIPT         => 'script/',
+    NO_META             => 1,
     ($ExtUtils::MakeMaker::VERSION >= 6.3002
       ? ('LICENSE'=> 'proprietary')
       : ()),
