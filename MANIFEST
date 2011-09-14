@@ -1,6 +1,8 @@
 Changes
 MANIFEST
 Makefile.PL
+META.yml
+META.json
 README
 script/uc.pl
 lib/Unicorn/Manager.pm

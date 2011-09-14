@@ -25,4 +25,11 @@ requires:
   MooseX::Declare: 0.34
   Test::More: 0
   YAML: 0
-version: 0.03
+provides:
+  Unicorn::Manager:
+    file: lib/Unicorn/Manager.pm
+  Unicorn::Manager::Types:
+    file: lib/Unicorn/Manager/Types.pm
+  Unicorn::Manager::Proc:
+    file: lib/Unicorn/Manager/Proc.pm
+version: 0.03.01

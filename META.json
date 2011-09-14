@@ -42,6 +42,11 @@
          }
       }
    },
-   "release_status" : "stable",
-   "version" : "0.03"
+   "provides" : {
+        "Unicorn::Manager" : "lib/Unicorn/Manager.pm",
+        "Unicorn::Manager::Types" : "lib/Unicorn/Manager/Types.pm",
+        "Unicorn::Manager::Proc" : "lib/Unicorn/Manager/Proc.pm"
+   },
+   "release_status" : "unstable",
+   "version" : "0.03.01"
 }
