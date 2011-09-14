@@ -32,4 +32,4 @@ provides:
     file: lib/Unicorn/Manager/Types.pm
   Unicorn::Manager::Proc:
     file: lib/Unicorn/Manager/Proc.pm
-version: 0.03.01
+version: 0.03.02

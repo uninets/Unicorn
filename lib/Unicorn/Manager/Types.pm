@@ -13,7 +13,7 @@ class Unicorn::Manager::Types {
 
 =head1 NAME
 
-Projector::Types - Types inherited of MooseX::Types to be used by Projector
+Unicorn::Types - Types inherited of MooseX::Types to be used by Unicorn
 
 =head1 VERSION
 

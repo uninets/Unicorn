@@ -48,5 +48,5 @@
         "Unicorn::Manager::Proc" : "lib/Unicorn/Manager/Proc.pm"
    },
    "release_status" : "unstable",
-   "version" : "0.03.01"
+   "version" : "0.03.02"
 }
