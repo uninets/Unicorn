@@ -5,7 +5,7 @@ class Unicorn::Manager {
     use Carp;           # for sane error reporting
     use File::Basename; # to strip the config file from the path
 
-    our $VERSION = '0.03.02';
+    our $VERSION = '0.03.03';
 
     use Unicorn::Manager::Proc;
 
@@ -391,7 +391,7 @@ Report bugs at:
 
 =over 2
 
-=item * Unicorn issue tracker
+=item * Unicorn::Manager issue tracker
 
 L<https://github.com/mugenken/Unicorn/issues>
 

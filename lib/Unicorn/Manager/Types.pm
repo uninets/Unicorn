@@ -13,7 +13,7 @@ class Unicorn::Manager::Types {
 
 =head1 NAME
 
-Unicorn::Types - Types inherited of MooseX::Types to be used by Unicorn
+Unicorn::Manager::Types - Types inherited of MooseX::Types to be used by Unicorn
 
 =head1 VERSION
 
@@ -39,7 +39,7 @@ Report bugs at:
 
 =over 2
 
-=item * unicorn.pl issue tracker
+=item * Unicorn::Manager issue tracker
 
 L<https://github.com/mugenken/Unicorn/issues>
 

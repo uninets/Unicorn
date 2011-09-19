@@ -142,3 +142,62 @@ class Unicorn::Manager::Proc {
     }
 }
 
+=head1 NAME
+
+Unicorn::Manager::Proc - Process table used by Unicorn::Manager
+
+=head1 VERSION
+
+Version 0.01
+
+=head1 SYNOPSIS
+
+The Unicorn::Manager::Proc Module provides a table of unicorn processes.
+Master/worker states are correctly represented.
+The modules utilizes /proc and thus only works on Linux systems.
+
+=head1 ATTRIBUTES/CONSTRUCTION
+
+=head2 Construction
+
+    my $uniman_proc = Unicorn::Manager::Proc->new;
+
+=head2 refresh
+
+Refreshes the process table.
+
+    $uniman_proc->refresh;
+
+=head1 AUTHOR
+
+Mugen Kenichi, C<< <mugen.kenichi at uninets.eu> >>
+
+=head1 BUGS
+
+Report bugs at:
+
+=over 2
+
+=item * Unicorn::Manager issue tracker
+
+L<https://github.com/mugenken/Unicorn/issues>
+
+=item * support at uninets.eu
+
+C<< <mugen.kenichi at uninets.eu> >>
+
+=back
+
+=head1 SUPPORT
+
+=over 2
+
+=item * Technical support
+
+C<< <mugen.kenichi at uninets.eu> >>
+
+=back
+
+=cut
+
+
