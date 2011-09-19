@@ -1,5 +1,5 @@
 ---
-abstract: 'A Perl interface to the Unicorn webserver'
+abstract: A Perl interface to the Unicorn webserver
 author:
   - 'Mugen Kenichi <mugen.kenichi@uninets.eu>'
 build_requires:
@@ -8,7 +8,8 @@ configure_requires:
   ExtUtils::MakeMaker: 0
 dynamic_config: 0
 generated_by: 'ExtUtils::MakeMaker version 6.59, CPAN::Meta::Converter version 2.112150'
-license: unknown
+license:
+  - MIT
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
@@ -17,19 +18,18 @@ no_index:
   directory:
     - t
     - inc
+provides:
+  Unicorn::Manager: lib/Unicorn/Manager.pm
+  Unicorn::Manager::Proc: lib/Unicorn/Manager/Proc.pm
+  Unicorn::Manager::Types: lib/Unicorn/Manager/Types.pm
+release_status: unstable
 requires:
   Carp: 0
   File::Basename: 0
   Getopt::Long: 0
+  JSON: 0
   Moose::Util::TypeConstraints: 0
   MooseX::Declare: 0.34
   Test::More: 0
   YAML: 0
-provides:
-  Unicorn::Manager:
-    file: lib/Unicorn/Manager.pm
-  Unicorn::Manager::Types:
-    file: lib/Unicorn/Manager/Types.pm
-  Unicorn::Manager::Proc:
-    file: lib/Unicorn/Manager/Proc.pm
-version: 0.03.02
+version: 0.03.04
