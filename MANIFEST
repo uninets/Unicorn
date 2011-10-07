@@ -1,6 +1,6 @@
 Changes
 MANIFEST
-Makefile.PL
+Build.PL
 META.yml
 META.json
 README
@@ -8,6 +8,7 @@ script/uc.pl
 lib/Unicorn/Manager.pm
 lib/Unicorn/Manager/Proc.pm
 lib/Unicorn/Manager/Types.pm
+lib/Unicorn/Manager/Version.pm
 t/00-load.t
 t/01-interface.t
 t/02-unicorn-proc-table.t

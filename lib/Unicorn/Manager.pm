@@ -5,9 +5,8 @@ class Unicorn::Manager {
     use Carp;           # for sane error reporting
     use File::Basename; # to strip the config file from the path
 
-    our $VERSION = '0.03.04';
-
     use Unicorn::Manager::Proc;
+    use Unicorn::Manager::Version;
 
     has username => ( is => 'rw', isa => 'Str', required => 1 );
     has group    => ( is => 'rw', isa => 'Str' );
@@ -16,6 +15,13 @@ class Unicorn::Manager {
     has proc     => ( is => 'rw', isa => 'Unicorn::Manager::Proc' );
     has uid      => ( is => 'rw', isa => 'Num' );
     has rails    => ( is => 'rw', isa => 'Bool', default => 0 );
+    has version  => (
+        is => 'ro',
+        isa => 'Unicorn::Manager::Version',
+        default => sub {
+            Unicorn::Manager::Version->new;
+        },
+    );
 
     method start ( Str :config($config_file), ArrayRef :$args? ) {
         my $timeout = 20;
@@ -246,9 +252,13 @@ class Unicorn::Manager {
 
 Unicorn::Manager - A Perl interface to the Unicorn webserver
 
+=head1 WARNING
+
+This is an unstable development release not ready for production!
+
 =head1 VERSION
 
-Version 0.02
+Version 0.04.01
 
 =head1 SYNOPSIS
 

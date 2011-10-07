@@ -1,53 +1,70 @@
 {
-   "no_index" : {
-      "directory" : [
-         "t",
-         "inc"
-      ]
-   },
-   "meta-spec" : {
-      "version" : "2",
-      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec"
-   },
-   "generated_by" : "ExtUtils::MakeMaker version 6.59, CPAN::Meta::Converter version 2.112150",
-   "version" : "0.03.04",
-   "name" : "Unicorn-Manager",
-   "dynamic_config" : 0,
+   "abstract" : "A Perl interface to the Unicorn webserver",
    "author" : [
       "Mugen Kenichi <mugen.kenichi@uninets.eu>"
    ],
+   "dynamic_config" : 1,
+   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.112150",
    "license" : [
-      "MIT"
+      "mit"
    ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "Unicorn-Manager",
+   "no_index" : {
+      "directory" : [
+         "t"
+      ]
+   },
    "prereqs" : {
-      "runtime" : {
+      "build" : {
          "requires" : {
-            "Getopt::Long" : 0,
-            "YAML" : 0,
-            "MooseX::Declare" : "0.34",
-            "Moose::Util::TypeConstraints" : 0,
-            "Carp" : 0,
-            "Test::More" : 0,
-            "File::Basename" : 0,
-            "JSON" : 0
+            "Module::Build" : "0.38"
          }
       },
       "configure" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : 0
+            "Module::Build" : "0.38"
          }
       },
-      "build" : {
+      "runtime" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : 0
+            "Carp" : 0,
+            "File::Basename" : 0,
+            "Getopt::Long" : 0,
+            "JSON" : 0,
+            "Moose::Util::TypeConstraints" : 0,
+            "MooseX::Declare" : "0.34",
+            "Test::More" : 0,
+            "YAML" : 0
          }
       }
    },
    "provides" : {
-      "Unicorn::Manager::Types" : "lib/Unicorn/Manager/Types.pm",
-      "Unicorn::Manager" : "lib/Unicorn/Manager.pm",
-      "Unicorn::Manager::Proc" : "lib/Unicorn/Manager/Proc.pm"
+      "Unicorn::Manager" : {
+         "file" : "lib/Unicorn/Manager.pm",
+         "version" : "v0.4.1"
+      },
+      "Unicorn::Manager::Proc" : {
+         "file" : "lib/Unicorn/Manager/Proc.pm",
+         "version" : "v0.4.1"
+      },
+      "Unicorn::Manager::Types" : {
+         "file" : "lib/Unicorn/Manager/Types.pm",
+         "version" : "v0.4.1"
+      },
+      "Unicorn::Manager::Version" : {
+         "file" : "lib/Unicorn/Manager/Version.pm",
+         "version" : "v0.4.1"
+      }
    },
-   "abstract" : "A Perl interface to the Unicorn webserver",
-   "release_status" : "unstable"
+   "release_status" : "stable",
+   "resources" : {
+      "license" : [
+         "http://opensource.org/licenses/mit-license.php"
+      ]
+   },
+   "version" : "0.04.01"
 }
