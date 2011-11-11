@@ -11,6 +11,8 @@ Synopsis
     $0 [action] [options]
 
 Actions
+    help
+        show this help
     show
         dumps a structure of user ids and the process ids of masters
         and their children
@@ -50,7 +52,7 @@ Examples
 
 END
 
-my $action = shift || 'show';
+my $action = shift || 'help';
 my $user;
 my $config;
 my $args = undef;
@@ -64,6 +66,11 @@ my $result = GetOptions(
     'debug'      => \$DEBUG,
     'rails'      => \$rails,
 );
+
+if ($action eq 'help'){
+    say $HELP;
+    exit 0;
+}
 
 if ($action eq 'show'){
     my $uc = Unicorn::Manager->new(
