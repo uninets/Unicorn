@@ -19,16 +19,16 @@ no_index:
 provides:
   Unicorn::Manager:
     file: lib/Unicorn/Manager.pm
-    version: v0.4.1
+    version: v0.4.3
   Unicorn::Manager::Proc:
     file: lib/Unicorn/Manager/Proc.pm
-    version: v0.4.1
+    version: v0.4.3
   Unicorn::Manager::Types:
     file: lib/Unicorn/Manager/Types.pm
-    version: v0.4.1
+    version: v0.4.3
   Unicorn::Manager::Version:
     file: lib/Unicorn/Manager/Version.pm
-    version: v0.4.1
+    version: v0.4.3
 requires:
   Carp: 0
   File::Basename: 0
@@ -40,4 +40,4 @@ requires:
   YAML: 0
 resources:
   license: http://opensource.org/licenses/mit-license.php
-version: 0.04.01
+version: 0.04.03

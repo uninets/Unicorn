@@ -55,6 +55,13 @@ class Unicorn::Manager::Proc::Table {
         for ( @users ) {
             my ($uid, $current_pid) = each %{$_};
 
+            my $found_pid_status = 0;
+
+            while (not $found_pid_status){
+                $found_pid_status = 1 if -f "/proc/$current_pid/status";
+                sleep 1;
+            }
+
             open my $fh, '<', "/proc/$current_pid/status";
             while (<$fh>){
 
