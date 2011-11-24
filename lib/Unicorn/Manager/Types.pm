@@ -1,33 +1,21 @@
-use MooseX::Declare;
+package Unicorn::Manager::Types;
 
-class Unicorn::Manager::Types {
+# TODO collection of coderefs to be used as type constraints
 
-    use Moose::Util::TypeConstraints;
-
-    subtype 'AbsPath'
-        => as 'Str'
-        => where { $_ ~~ /^(?:\/[^\0^\/]+)+\/?/ }
-        => message { 'Argument is no valid absolute Unix path.' };
-
-}
 
 =head1 NAME
 
-Unicorn::Manager::Types - Types inherited of MooseX::Types to be used by Unicorn
+Unicorn::Manager::Types - Types to be used by Unicorn
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =head1 SYNOPSIS
 
-Currently containing a single type.
+Currently containing nothing.
 
 =head1 TYPES
-
-=head2 AbsPath
-
-Matches absulute unix path.
 
 =head1 AUTHOR
 

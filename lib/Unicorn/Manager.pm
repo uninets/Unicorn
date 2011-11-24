@@ -26,7 +26,6 @@ has version  => (
 );
 
 sub start {
-    # ( Str :config($config_file), ArrayRef :$args? )
     my ($self, $opts) = @_;
     my $config_file = $opts->{config};
     my $args = $opts->{args};
@@ -110,7 +109,6 @@ sub stop {
 }
 
 sub restart {
-    # ( Str :$mode? = 'graceful' )
     my ($self, $opts) = @_;
     my $mode = $opts->{mode} || 'graceful';
 
@@ -336,7 +334,7 @@ TODO: Needs to be improved.
 
 =head2 Contruction
 
-    my $unicorn = Unicorn->new(
+    my $unicorn = Unicorn::Manager->new(
         username => 'myuser',
         group    => 'mygroup',
     );
@@ -345,10 +343,10 @@ TODO: Needs to be improved.
 
 =head2 start
 
-    $unicorn->start(
+    $unicorn->start({
         config => '/path/to/my/config',
         args => ['-D', '--host 127.0.0.1'],
-    );
+    });
 
 Parameters are the path to the config file and an optional ArrayRef with
 additional arguments.
@@ -371,7 +369,7 @@ If no master is running nothing will be happening.
 
 =head2 restart
 
-    my $result = $unicorn->restart( mode => 'hard');
+    my $result = $unicorn->restart({ mode => 'hard' });
 
 Mode defaults to 'graceful'.
 
@@ -407,13 +405,13 @@ Writes the configuration into a unicorn config file.
 
 =head2 add_worker
 
-    my $result = $unicorn->add_worker( num => 3 );
+    my $result = $unicorn->add_worker({ num => 3 });
 
 Adds num workers to the users unicorn. num defaults to 1.
 
 =head2 remove_worker
 
-    my $result = $unicorn->remove_worker( num => 3 );
+    my $result = $unicorn->remove_worker({ num => 3 });
 
 Removes num workers but maximum of workers count -1. num defaults to 1.
 

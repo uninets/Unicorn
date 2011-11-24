@@ -2,7 +2,6 @@ use strict;
 use warnings;
 
 use Test::More tests => 12;
-use Test::Moose;
 
 my @methods = ( 'start', 'stop', 'restart', 'read_config', 'write_config' );
 my @attributes = ( 'username', 'group', 'config', 'DEBUG' );
@@ -16,7 +15,7 @@ ok ( my $unicorn = Unicorn::Manager->new( username => 'nobody' ));
 isa_ok ( $unicorn, 'Unicorn::Manager' );
 
 for (@attributes){
-    has_attribute_ok ( $unicorn, $_ );
+    can_ok ( $unicorn, $_ );
 }
 
 for (@methods){
