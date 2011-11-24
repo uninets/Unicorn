@@ -4,7 +4,7 @@
       "Mugen Kenichi <mugen.kenichi@uninets.eu>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.112150",
+   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.112621",
    "license" : [
       "mit"
    ],
@@ -35,29 +35,37 @@
             "File::Basename" : 0,
             "Getopt::Long" : 0,
             "JSON" : 0,
+            "Moo" : 0,
             "Moose::Util::TypeConstraints" : 0,
-            "MooseX::Declare" : "0.34",
             "Test::More" : 0,
-            "YAML" : 0
+            "Time::HiRes" : 0,
+            "YAML" : 0,
+            "bareword::filehandles" : 0,
+            "indirect" : 0,
+            "multidimensional" : 0
          }
       }
    },
    "provides" : {
       "Unicorn::Manager" : {
          "file" : "lib/Unicorn/Manager.pm",
-         "version" : "v0.4.3"
+         "version" : "v0.5.0"
       },
       "Unicorn::Manager::Proc" : {
          "file" : "lib/Unicorn/Manager/Proc.pm",
-         "version" : "v0.4.3"
+         "version" : "v0.5.0"
+      },
+      "Unicorn::Manager::Proc::Table" : {
+         "file" : "lib/Unicorn/Manager/Proc.pm",
+         "version" : 0
       },
       "Unicorn::Manager::Types" : {
          "file" : "lib/Unicorn/Manager/Types.pm",
-         "version" : "v0.4.3"
+         "version" : "v0.5.0"
       },
       "Unicorn::Manager::Version" : {
          "file" : "lib/Unicorn/Manager/Version.pm",
-         "version" : "v0.4.3"
+         "version" : "v0.5.0"
       }
    },
    "release_status" : "stable",
@@ -66,5 +74,5 @@
          "http://opensource.org/licenses/mit-license.php"
       ]
    },
-   "version" : "0.04.03"
+   "version" : "0.05.00"
 }
