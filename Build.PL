@@ -20,14 +20,18 @@ my $build = Module::Build->new(
     },
 
     requires => {
-        'Test::More'         => 0,
-        'MooseX::Declare'    => 0.34,
-        'File::Basename'     => 0,
+        'Test::More'                   => 0,
+        'Moo'                          => 0,
+        'File::Basename'               => 0,
         'Moose::Util::TypeConstraints' => 0,
-        'YAML'               => 0,
-        'JSON'               => 0,
-        'Carp'               => 0,
-        'Getopt::Long'       => 0,
+        'YAML'                         => 0,
+        'JSON'                         => 0,
+        'Carp'                         => 0,
+        'Getopt::Long'                 => 0,
+        'indirect'                     => 0,
+        'multidimensional'             => 0,
+        'Time::HiRes'                  => 0,
+        'bareword::filehandles'        => 0,
     },
 
     build_requires => {

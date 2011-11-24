@@ -1,6 +1,7 @@
 package Unicorn::Manager::Proc::Table;
 
 use Moo;
+use Time::HiRes 'usleep';
 use strict;
 use warnings;
 use autodie;
@@ -72,7 +73,9 @@ sub _parse_ps {
 
         while (not $found_pid_status){
             $found_pid_status = 1 if -f "/proc/$current_pid/status";
-            sleep 1;
+            # check every 1ms
+            # TODO implement some timeout to prevent endless loop
+            Time::HiRes::usleep 1000;
         }
 
         open my $fh, '<', "/proc/$current_pid/status";
