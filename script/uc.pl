@@ -138,7 +138,7 @@ if ( $action eq 'start' ) {
         use Data::Dumper;
         say " -> \$arg_ref => " . Dumper($arg_ref);
     }
-    $unicorn->start( config => $config, args => $arg_ref );
+    $unicorn->start({config => $config, args => $arg_ref});
 }
 elsif ( $action eq 'stop' ) {
     say "\$unicorn->stop()" if $DEBUG;
@@ -147,7 +147,7 @@ elsif ( $action eq 'stop' ) {
 }
 elsif ( $action eq 'restart' ) {
     say "\$unicorn->restart( mode => 'graceful' )" if $DEBUG;
-    $unicorn->restart( mode => 'graceful' );
+    $unicorn->restart({ mode => 'graceful' });
 }
 elsif ( $action eq 'reload' ) {
     say "\$unicorn->reload()" if $DEBUG;
@@ -155,11 +155,11 @@ elsif ( $action eq 'reload' ) {
 }
 elsif ( $action eq 'add_worker' ) {
     say "\$unicorn->add_worker( num => 1 )" if $DEBUG;
-    $unicorn->add_worker( num => 1 );
+    $unicorn->add_worker({ num => 1 });
 }
 elsif ( $action eq 'rm_worker' ) {
     say "\$unicorn->remove_worker( num => 1 )" if $DEBUG;
-    $unicorn->remove_worker( num => 1 );
+    $unicorn->remove_worker({ num => 1 });
 }
 else {
     die "No such action\n";
