@@ -12,7 +12,7 @@ sub new {
 
 sub get {
     my $self = shift;
-    my $VERSION = version->declare('0.05.00');
+    my $VERSION = version->declare('0.05.01');
     return $VERSION;
 }
 
