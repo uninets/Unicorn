@@ -7,6 +7,7 @@ use autodie;
 use Moo;
 use Carp;           # for sane error reporting
 use File::Basename; # to strip the config file from the path
+use Cwd 'abs_path';
 
 use Unicorn::Manager::Proc;
 use Unicorn::Manager::Version;
@@ -69,7 +70,7 @@ sub start {
                     $appdir = $conf_dir;
                 }
                 else {
-                    $appdir = $passwd[7] . '/' . $conf_dir;
+                    $appdir = abs_path($conf_dir);
                 }
             }
 

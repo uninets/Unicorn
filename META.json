@@ -33,6 +33,7 @@
          "requires" : {
             "B::Hooks::OP::Check" : "0.19",
             "Carp" : 0,
+            "Cwd" : 0,
             "File::Basename" : 0,
             "Getopt::Long" : 0,
             "JSON" : 0,
@@ -49,11 +50,11 @@
    "provides" : {
       "Unicorn::Manager" : {
          "file" : "lib/Unicorn/Manager.pm",
-         "version" : "v0.5.1"
+         "version" : "v0.5.2"
       },
       "Unicorn::Manager::Proc" : {
          "file" : "lib/Unicorn/Manager/Proc.pm",
-         "version" : "v0.5.1"
+         "version" : "v0.5.2"
       },
       "Unicorn::Manager::Proc::Table" : {
          "file" : "lib/Unicorn/Manager/Proc.pm",
@@ -61,11 +62,11 @@
       },
       "Unicorn::Manager::Types" : {
          "file" : "lib/Unicorn/Manager/Types.pm",
-         "version" : "v0.5.1"
+         "version" : "v0.5.2"
       },
       "Unicorn::Manager::Version" : {
          "file" : "lib/Unicorn/Manager/Version.pm",
-         "version" : "v0.5.1"
+         "version" : "v0.5.2"
       }
    },
    "release_status" : "stable",
@@ -74,5 +75,5 @@
          "http://opensource.org/licenses/mit-license.php"
       ]
    },
-   "version" : "0.05.01"
+   "version" : "0.05.02"
 }

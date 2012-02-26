@@ -1,12 +1,20 @@
-use 5.012;
+use 5.010;
 use warnings;
 
 use Module::Build;
 use lib 'lib';
 use Unicorn::Manager::Version;
+use Getopt::Long qw(:config pass_through);
 
+my $install = 0;
+my $dist    = 0;
 my @script_files = grep { -f and ! -d } glob 'script/*';
 my $v = Unicorn::Manager::Version->new;
+
+GetOptions(
+    'install' => \$install,
+    'dist'    => \$dist,
+);
 
 my $build = Module::Build->new(
     module_name => 'Unicorn::Manager',
@@ -32,6 +40,7 @@ my $build = Module::Build->new(
         'B::Hooks::OP::Check'          => 0.19, # dependency for multidimensional
         'Time::HiRes'                  => 0,
         'bareword::filehandles'        => 0,
+        'Cwd'                          => 0,
     },
 
     build_requires => {
@@ -72,4 +81,17 @@ my $build = Module::Build->new(
     },
 );
 
-$build->create_build_script;
+if ($dist) {
+    $build->dispatch('build');
+    $build->dispatch('test');
+    $build->dispatch('distmeta');
+    $build->dispatch('dist');
+}
+
+if ($install) {
+    $build->dispatch('build');
+    $build->dispatch('test', verbose => 1);
+    $build->dispatch('install');
+}
+
+$build->create_build_script();
