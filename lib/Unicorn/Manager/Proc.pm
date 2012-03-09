@@ -160,9 +160,6 @@ use 5.010;
 has process_table => (
     is => 'rw',
 );
-has newest_master => (
-    is => 'rw',
-);
 
 sub BUILD {
     my $self = shift;
@@ -180,12 +177,12 @@ sub as_json {
     my $user_table = $self->process_table->ptable;
 
     for (keys %$user_table){
-        my $username = getpwnam $_;
+        my $username = getpwuid $_;
         $user_table->{$username} = $user_table->{$_};
         delete $user_table->{$_}
     }
 
-    my $json = JSON->new->utf8(1)->pretty(1);
+    my $json = JSON->new->utf8(1);
 
     return $json->encode($user_table);
 }
@@ -200,7 +197,7 @@ Unicorn::Manager::Proc - Process table used by Unicorn::Manager
 
 =head1 VERSION
 
-Version 0.01
+Version 0.005003
 
 =head1 SYNOPSIS
 
@@ -213,6 +210,10 @@ The modules utilizes /proc and thus only works on Linux systems.
 =head2 Construction
 
     my $uniman_proc = Unicorn::Manager::Proc->new;
+
+=head2 process_table
+
+Get the process table.
 
 =head2 refresh
 

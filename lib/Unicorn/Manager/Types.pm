@@ -9,7 +9,7 @@ Unicorn::Manager::Types - Types to be used by Unicorn
 
 =head1 VERSION
 
-Version 0.02
+Version 0.005003
 
 =head1 SYNOPSIS
 

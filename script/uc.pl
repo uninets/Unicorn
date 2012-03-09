@@ -28,6 +28,8 @@ Actions
         adds a unicorn worker
     rm_worker
         removes a unicorn worker
+    version
+        print Unicorn::Manager version
 
 Options
     -u, --user
@@ -67,54 +69,86 @@ my $result = GetOptions(
     'rails'      => \$rails,
 );
 
-if ($action eq 'help'){
-    say $HELP;
-    exit 0;
-}
+my $dispatch_table = {
+    help => sub {
+        say $HELP;
+        exit 0;
+    },
+    json => sub {
+        my $uc = Unicorn::Manager->new(
+            username => 'nobody',
+            DEBUG => $DEBUG,
+        );
 
-if ($action eq 'json') {
-    my $uc = Unicorn::Manager->new(
-        username => 'nobody',
-        DEBUG => $DEBUG,
-    );
+        print $uc->proc->as_json;
 
-    print $uc->proc->as_json;
+        exit 0;
+    },
+    show => sub {
+        my $uc = Unicorn::Manager->new(
+            username => 'nobody',
+            DEBUG => $DEBUG,
+        );
 
-    exit 0;
-}
+        my $uidref = $uc->proc->process_table->ptable;
 
-if ($action eq 'show'){
-    my $uc = Unicorn::Manager->new(
-        username => 'nobody',
-        DEBUG => $DEBUG,
-    );
+        for (keys %{$uidref}){
+            my $username = getpwuid $_;
+            my $pidref = $uidref->{$_};
 
-    my $uidref = $uc->proc->process_table->ptable;
+            print "$username:\n";
 
-    for (keys %{$uidref}){
-        my $username = getpwuid $_;
-        my $pidref = $uidref->{$_};
-
-        print "$username:\n";
-
-        for my $master (keys %{$pidref}){
-            print "    master: $master\n";
-            for my $worker (@{$pidref->{$master}}){
-                if (ref($worker) ~~ 'HASH'){
-                    for (keys %$worker){
-                        print "        new master: " . $_ . "\n";
-                        print "            new worker: $_\n" for @{$worker->{$_}}
+            for my $master (keys %{$pidref}){
+                print "    master: $master\n";
+                for my $worker (@{$pidref->{$master}}){
+                    if (ref($worker) ~~ 'HASH'){
+                        for (keys %$worker){
+                            print "        new master: " . $_ . "\n";
+                            print "            new worker: $_\n" for @{$worker->{$_}}
+                        }
                     }
-                }
-                else {
-                    print "        worker: $worker\n";
+                    else {
+                        print "        worker: $worker\n";
+                    }
                 }
             }
         }
-    }
 
-    exit 0;
-}
+        exit 0;
+    },
+    start => sub {
+        unless ($config) {
+            print $HELP;
+            die "Action 'start' requires a config file.\n";
+        }
+        if ($DEBUG) {
+            say "\$unicorn->start( config => \$config, args => \$arg_ref )";
+            say " -> \$config => $config";
+            use Data::Dumper;
+            say " -> \$arg_ref => " . Dumper($arg_ref);
+        }
+        $unicorn->start({config => $config, args => $arg_ref});
+    },
+    stop => sub {
+        $unicorn->stop;
+    },
+    restart => sub {
+        $unicorn->restart({ mode => 'graceful' });
+    },
+    reload => sub {
+        $unicorn->reload;
+    },
+    add_worker => sub {
+        $unicorn->add_worker({ num => 1 });
+    },
+    rm_worker => sub {
+        $unicorn->remove_worker({ num => 1 });
+    },
+    version => sub {
+        say Unicorn::Manager::Version->get;
+    },
+};
+
 
 if ($> > 0){
     $user = getpwuid $> unless $user;
@@ -138,42 +172,11 @@ my $unicorn = Unicorn::Manager->new(
     DEBUG    => $DEBUG,
 );
 
-if ( $action eq 'start' ) {
-    unless ($config) {
-        print $HELP;
-        die "Action 'start' requires a config file.\n";
-    }
-    if ($DEBUG) {
-        say "\$unicorn->start( config => \$config, args => \$arg_ref )";
-        say " -> \$config => $config";
-        use Data::Dumper;
-        say " -> \$arg_ref => " . Dumper($arg_ref);
-    }
-    $unicorn->start({config => $config, args => $arg_ref});
-}
-elsif ( $action eq 'stop' ) {
-    say "\$unicorn->stop()" if $DEBUG;
-    $unicorn->stop();
-
-}
-elsif ( $action eq 'restart' ) {
-    say "\$unicorn->restart( mode => 'graceful' )" if $DEBUG;
-    $unicorn->restart({ mode => 'graceful' });
-}
-elsif ( $action eq 'reload' ) {
-    say "\$unicorn->reload()" if $DEBUG;
-    $unicorn->reload();
-}
-elsif ( $action eq 'add_worker' ) {
-    say "\$unicorn->add_worker( num => 1 )" if $DEBUG;
-    $unicorn->add_worker({ num => 1 });
-}
-elsif ( $action eq 'rm_worker' ) {
-    say "\$unicorn->remove_worker( num => 1 )" if $DEBUG;
-    $unicorn->remove_worker({ num => 1 });
+if (exists $dispatch_table->{$action}){
+    $dispatch_table->{$action}->();
 }
 else {
-    die "No such action\n";
+    say "No action $action defined";
 }
 
 exit 0;

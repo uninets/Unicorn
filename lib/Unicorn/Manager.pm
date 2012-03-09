@@ -283,7 +283,7 @@ This is an unstable development release not ready for production!
 
 =head1 VERSION
 
-Version 0.04.01
+Version 0.005003
 
 =head1 SYNOPSIS
 
@@ -325,6 +325,22 @@ Groupname of the Unicorn process. Defaults to the users primary group.
 
 A HashRef containing the information to create a Unicorn::Config object.
 See perldoc Unicon::Config for more information.
+
+=head2 proc
+
+A Unicorn::Manager::Proc object. If omitted it will be created automatically.
+
+=head2 uid
+
+The user id matching the given username. Will be set automatically on object creation.
+
+=head2 rails
+
+Currently unused flag.
+
+=head2 version
+
+Get the Unicorn::Manager version.
 
 =head2 DEBUG
 

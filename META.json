@@ -50,11 +50,11 @@
    "provides" : {
       "Unicorn::Manager" : {
          "file" : "lib/Unicorn/Manager.pm",
-         "version" : "v0.5.2"
+         "version" : "0.005003"
       },
       "Unicorn::Manager::Proc" : {
          "file" : "lib/Unicorn/Manager/Proc.pm",
-         "version" : "v0.5.2"
+         "version" : "0.005003"
       },
       "Unicorn::Manager::Proc::Table" : {
          "file" : "lib/Unicorn/Manager/Proc.pm",
@@ -62,11 +62,11 @@
       },
       "Unicorn::Manager::Types" : {
          "file" : "lib/Unicorn/Manager/Types.pm",
-         "version" : "v0.5.2"
+         "version" : "0.005003"
       },
       "Unicorn::Manager::Version" : {
          "file" : "lib/Unicorn/Manager/Version.pm",
-         "version" : "v0.5.2"
+         "version" : "0.005003"
       }
    },
    "release_status" : "stable",
@@ -75,5 +75,5 @@
          "http://opensource.org/licenses/mit-license.php"
       ]
    },
-   "version" : "0.05.02"
+   "version" : "0.005003"
 }
