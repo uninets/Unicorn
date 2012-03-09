@@ -95,3 +95,4 @@ if ($install) {
 }
 
 $build->create_build_script();
+

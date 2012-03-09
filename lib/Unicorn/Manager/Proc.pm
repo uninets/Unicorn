@@ -25,11 +25,6 @@ sub refresh {
     return $self->_parse_ps;
 }
 
-sub Hash {
-    my $self = shift;
-    return %{ $self->ptable };
-}
-
 # build a hash tree of the format
 #
 # {
@@ -156,6 +151,7 @@ sub _parse_ps {
 package Unicorn::Manager::Proc;
 
 use Moo;
+use JSON;
 use strict;
 use warnings;
 use autodie;
@@ -176,6 +172,22 @@ sub BUILD {
 sub refresh {
     my $self = shift;
     $self->process_table->refresh;
+}
+
+sub as_json {
+    my $self = shift;
+
+    my $user_table = $self->process_table->ptable;
+
+    for (keys %$user_table){
+        my $username = getpwnam $_;
+        $user_table->{$username} = $user_table->{$_};
+        delete $user_table->{$_}
+    }
+
+    my $json = JSON->new->utf8(1)->pretty(1);
+
+    return $json->encode($user_table);
 }
 
 1;
@@ -207,6 +219,12 @@ The modules utilizes /proc and thus only works on Linux systems.
 Refreshes the process table.
 
     $uniman_proc->refresh;
+
+=head2 as_json
+
+Return process table as json.
+
+    my $json_text = $uniman_proc->as_json;
 
 =head1 AUTHOR
 

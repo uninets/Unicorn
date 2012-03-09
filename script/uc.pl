@@ -72,6 +72,17 @@ if ($action eq 'help'){
     exit 0;
 }
 
+if ($action eq 'json') {
+    my $uc = Unicorn::Manager->new(
+        username => 'nobody',
+        DEBUG => $DEBUG,
+    );
+
+    print $uc->proc->as_json;
+
+    exit 0;
+}
+
 if ($action eq 'show'){
     my $uc = Unicorn::Manager->new(
         username => 'nobody',
