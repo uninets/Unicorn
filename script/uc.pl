@@ -153,6 +153,9 @@ my $dispatch_table = {
 if ($> > 0){
     $user = getpwuid $> unless $user;
 }
+else {
+    $user = 'nobody' unless $user;
+}
 
 unless ( $user && $action ) {
     print $HELP;
