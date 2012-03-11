@@ -16,6 +16,9 @@ Actions
     show
         dumps a structure of user ids and the process ids of masters
         and their children
+    json
+        dumps a structure of user names and the process ids of masters
+        and their children as json
     start
         starts a users unicorn server, requires --config to be specified
     stop
@@ -68,6 +71,33 @@ my $result = GetOptions(
     'debug'      => \$DEBUG,
     'rails'      => \$rails,
 );
+
+if ($> > 0){
+    $user = getpwuid $> unless $user;
+}
+else {
+    $user = 'nobody' unless $user;
+}
+
+unless ( $user && $action ) {
+    print $HELP;
+    die "Missing arguments. username and action are required\n";
+}
+
+my $arg_ref = [];
+
+# make -D default as most of the time you will want to start Unicorn as daemon
+$args = "-D" unless defined $args;
+
+$arg_ref = [ split ',', $args ] if $args;
+
+my $unicorn = sub {
+    return Unicorn::Manager->new(
+        username => $user,
+        rails    => $rails,
+        DEBUG    => $DEBUG,
+    );
+};
 
 my $dispatch_table = {
     help => sub {
@@ -127,53 +157,30 @@ my $dispatch_table = {
             use Data::Dumper;
             say " -> \$arg_ref => " . Dumper($arg_ref);
         }
-        $unicorn->start({config => $config, args => $arg_ref});
+        $unicorn->()->start({config => $config, args => $arg_ref});
     },
     stop => sub {
-        $unicorn->stop;
+        $unicorn->()->stop;
     },
     restart => sub {
-        $unicorn->restart({ mode => 'graceful' });
+        $unicorn->()->restart({ mode => 'graceful' });
     },
     reload => sub {
-        $unicorn->reload;
+        $unicorn->()->reload;
     },
     add_worker => sub {
-        $unicorn->add_worker({ num => 1 });
+        $unicorn->()->add_worker({ num => 1 });
     },
     rm_worker => sub {
-        $unicorn->remove_worker({ num => 1 });
+        $unicorn->()->remove_worker({ num => 1 });
     },
     version => sub {
         say Unicorn::Manager::Version->get;
     },
+    query => sub {
+        say 'yes' if $unicorn->()->query('has_unicorn', 'a_user');
+    },
 };
-
-
-if ($> > 0){
-    $user = getpwuid $> unless $user;
-}
-else {
-    $user = 'nobody' unless $user;
-}
-
-unless ( $user && $action ) {
-    print $HELP;
-    die "Missing arguments. username and action are required\n";
-}
-
-my $arg_ref = [];
-
-# make -D default as most of the time you will want to start Unicorn as daemon
-$args = "-D" unless defined $args;
-
-$arg_ref = [ split ',', $args ] if $args;
-
-my $unicorn = Unicorn::Manager->new(
-    username => $user,
-    rails    => $rails,
-    DEBUG    => $DEBUG,
-);
 
 if (exists $dispatch_table->{$action}){
     $dispatch_table->{$action}->();

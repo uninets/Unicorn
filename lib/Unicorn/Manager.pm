@@ -7,6 +7,7 @@ use autodie;
 use Moo;
 use Carp;           # for sane error reporting
 use File::Basename; # to strip the config file from the path
+use File::Find;
 use Cwd 'abs_path';
 
 use Unicorn::Manager::Proc;
@@ -98,6 +99,19 @@ sub start {
         return 0;
     }
     return 1;
+}
+
+sub query {
+    my ($self, $query, @params) = @_;
+
+    my $dispatch_table = {
+        has_unicorn => sub {
+            return 1;
+        },
+    };
+
+    $dispatch_table->{$query}->(@params);
+
 }
 
 sub stop {
@@ -283,7 +297,7 @@ This is an unstable development release not ready for production!
 
 =head1 VERSION
 
-Version 0.005004
+Version 0.005005
 
 =head1 SYNOPSIS
 

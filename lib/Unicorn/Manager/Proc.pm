@@ -197,7 +197,7 @@ Unicorn::Manager::Proc - Process table used by Unicorn::Manager
 
 =head1 VERSION
 
-Version 0.005004
+Version 0.005005
 
 =head1 SYNOPSIS
 
