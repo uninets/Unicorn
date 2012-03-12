@@ -105,6 +105,7 @@ sub query {
     # TODO
     # Put all of this into Unicorn::Manager::CLI::Query or similar
     my ($self, $query, @params) = @_;
+    say "Query: $query";
     my $render = sub {
         my $status = shift;
         my $message = shift;
