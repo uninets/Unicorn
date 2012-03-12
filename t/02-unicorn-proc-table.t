@@ -2,10 +2,10 @@ use strict;
 use warnings;
 
 use Test::More;
-use Unicorn::Manager::Proc;
+use Unicorn::Manager::CLI::Proc;
 
-my $u_p_table = Unicorn::Manager::Proc::Table->new;
+my $u_p_table = Unicorn::Manager::CLI::Proc::Table->new;
 
-isa_ok $u_p_table, 'Unicorn::Manager::Proc::Table';
+isa_ok $u_p_table, 'Unicorn::Manager::CLI::Proc::Table';
 
 done_testing;

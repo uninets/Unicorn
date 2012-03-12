@@ -1,4 +1,4 @@
-package Unicorn::Manager::Proc::Table;
+package Unicorn::Manager::CLI::Proc::Table;
 
 use Moo;
 use Time::HiRes 'usleep';
@@ -148,7 +148,7 @@ sub _parse_ps {
 
 1;
 
-package Unicorn::Manager::Proc;
+package Unicorn::Manager::CLI::Proc;
 
 use Moo;
 use JSON;
@@ -163,7 +163,7 @@ has process_table => (
 
 sub BUILD {
     my $self = shift;
-    $self->process_table(Unicorn::Manager::Proc::Table->new);
+    $self->process_table(Unicorn::Manager::CLI::Proc::Table->new);
 }
 
 sub refresh {
@@ -193,15 +193,15 @@ __END__
 
 =head1 NAME
 
-Unicorn::Manager::Proc - Process table used by Unicorn::Manager
+Unicorn::Manager::CLI::Proc - Process table used by Unicorn::Manager
 
 =head1 VERSION
 
-Version 0.005007
+Version 0.006000
 
 =head1 SYNOPSIS
 
-The Unicorn::Manager::Proc Module provides a table of unicorn processes.
+The Unicorn::Manager::CLI::Proc Module provides a table of unicorn processes.
 Master/worker states are correctly represented.
 The modules utilizes /proc and thus only works on Linux systems.
 
@@ -209,7 +209,7 @@ The modules utilizes /proc and thus only works on Linux systems.
 
 =head2 Construction
 
-    my $uniman_proc = Unicorn::Manager::Proc->new;
+    my $uniman_proc = Unicorn::Manager::CLI::Proc->new;
 
 =head2 process_table
 

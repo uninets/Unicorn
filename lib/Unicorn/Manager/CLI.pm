@@ -1,4 +1,4 @@
-package Unicorn::Manager;
+package Unicorn::Manager::CLI;
 
 use 5.010;
 use strict;
@@ -10,7 +10,7 @@ use File::Basename; # to strip the config file from the path
 use File::Find;
 use Cwd 'abs_path';
 
-use Unicorn::Manager::Proc;
+use Unicorn::Manager::CLI::Proc;
 use Unicorn::Manager::Version;
 
 has username => ( is => 'rw', required => 1 );
@@ -103,7 +103,7 @@ sub start {
 
 sub query {
     # TODO
-    # Put all of this into Unicorn::Manager::Query or similar
+    # Put all of this into Unicorn::Manager::CLI::Query or similar
     my ($self, $query, @params) = @_;
     my $render = sub {
         my $status = shift;
@@ -212,7 +212,7 @@ sub read_config {
     # TODO
     # should return a config object
     #
-    # all config related stuff should go into a seperate class anyway: Unicorn::Manager::Config
+    # all config related stuff should go into a seperate class anyway: Unicorn::Manager::CLI::Config
     return 0;
 }
 
@@ -227,7 +227,7 @@ sub write_config {
     #
     # should return a string. could be written to file or screen.
     #
-    # all config related stuff should go into a seperate class anyway: Unicorn::Manager::Config
+    # all config related stuff should go into a seperate class anyway: Unicorn::Manager::CLI::Config
     return 0;
 }
 
@@ -322,7 +322,7 @@ sub BUILD {
     croak "no such username\n" unless getpwnam($self->username);
 
     $self->uid((getpwnam($self->username))[2]);
-    $self->proc(Unicorn::Manager::Proc->new) unless $self->proc;
+    $self->proc(Unicorn::Manager::CLI::Proc->new) unless $self->proc;
 
 }
 
@@ -331,7 +331,7 @@ sub BUILD {
 
 =head1 NAME
 
-Unicorn::Manager - A Perl interface to the Unicorn webserver
+Unicorn::Manager::CLI - A Perl interface to the Unicorn webserver
 
 =head1 WARNING
 
@@ -339,15 +339,15 @@ This is an unstable development release not ready for production!
 
 =head1 VERSION
 
-Version 0.005007
+Version 0.006000
 
 =head1 SYNOPSIS
 
-The Unicorn::Manager module aimes to provide methods to start, stop and
+The Unicorn::Manager::CLI module aimes to provide methods to start, stop and
 gracefully restart the server. You can add and remove workers on the fly.
 
 TODO:
-Unicorn::Manager::Config should provide methods to create config files and
+Unicorn::Manager::CLI::Config should provide methods to create config files and
 offer an OO interface to the config object.
 
 Until now basically only unicorn_rails is supported. This Lib is a quick hack
@@ -364,7 +364,7 @@ welcome.
 
 =head1 ATTRIBUTES/CONSTRUCTION
 
-Unicorn::Manager has following attributes:
+Unicorn::Manager::CLI has following attributes:
 
 =head2 username
 
@@ -384,7 +384,7 @@ See perldoc Unicon::Config for more information.
 
 =head2 proc
 
-A Unicorn::Manager::Proc object. If omitted it will be created automatically.
+A Unicorn::Manager::CLI::Proc object. If omitted it will be created automatically.
 
 =head2 uid
 
@@ -396,7 +396,7 @@ Currently unused flag.
 
 =head2 version
 
-Get the Unicorn::Manager version.
+Get the Unicorn::Manager::CLI version.
 
 =head2 DEBUG
 
@@ -407,7 +407,7 @@ TODO: Needs to be improved.
 
 =head2 Contruction
 
-    my $unicorn = Unicorn::Manager->new(
+    my $unicorn = Unicorn::Manager::CLI->new(
         username => 'myuser',
         group    => 'mygroup',
     );
@@ -504,7 +504,7 @@ Report bugs at:
 
 =over 2
 
-=item * Unicorn::Manager issue tracker
+=item * Unicorn::Manager::CLI issue tracker
 
 L<https://github.com/mugenken/Unicorn/issues>
 

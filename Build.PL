@@ -61,12 +61,12 @@ my $build = Module::Build->new(
 
     meta_merge => {
         provides => {
-            'Unicorn::Manager' => {
-                file => 'lib/Unicorn/Manager.pm',
+            'Unicorn::Manager::CLI' => {
+                file => 'lib/Unicorn/Manager/CLI.pm',
                 version => $v->get,
             },
-            'Unicorn::Manager::Proc' => {
-                file => 'lib/Unicorn/Manager/Proc.pm',
+            'Unicorn::Manager::CLI::Proc' => {
+                file => 'lib/Unicorn/Manager/CLI/Proc.pm',
                 version => $v->get,
             },
             'Unicorn::Manager::Types' => {
@@ -75,6 +75,10 @@ my $build = Module::Build->new(
             },
             'Unicorn::Manager::Version' => {
                 file => 'lib/Unicorn/Manager/Version.pm',
+                version => $v->get,
+            },
+            'Unicorn::Manager::Server' => {
+                file => 'lib/Unicorn/Manager/Server.pm',
                 version => $v->get,
             },
         },

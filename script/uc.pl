@@ -4,7 +4,7 @@ use 5.010;
 use warnings;
 use Getopt::Long qw(:config pass_through);
 
-use Unicorn::Manager;
+use Unicorn::Manager::CLI;
 
 my $HELP = <<"END";
 Synopsis
@@ -92,7 +92,7 @@ $args = "-D" unless defined $args;
 $arg_ref = [ split ',', $args ] if $args;
 
 my $unicorn = sub {
-    return Unicorn::Manager->new(
+    return Unicorn::Manager::CLI->new(
         username => $user,
         rails    => $rails,
         DEBUG    => $DEBUG,
@@ -105,7 +105,7 @@ my $dispatch_table = {
         exit 0;
     },
     show => sub {
-        my $uc = Unicorn::Manager->new(
+        my $uc = Unicorn::Manager::CLI->new(
             username => 'nobody',
             DEBUG => $DEBUG,
         );
