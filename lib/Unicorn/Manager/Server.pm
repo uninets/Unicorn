@@ -35,7 +35,7 @@ sub run {
             server_name  => 'ucd.pl',
             local_port   => $self->port,
             timeout      => 10,
-            delimiter    => "\r\n",
+            delimiter    => "\n",
             on_connected => sub {
                 my $self   = shift;
                 my $client = shift;
@@ -58,8 +58,8 @@ sub run {
                     return 1;
                 }
 
-                chomp for @params;
-                say for @params;
+                # for telnet compatibility
+                ($_ = $_) =~ s/\r// for @params;
 
                 print $client $self->cli->query(@params)
             },
