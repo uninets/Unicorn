@@ -2,7 +2,7 @@
 
 use 5.010;
 use warnings;
-use Getopt::Long;
+use Getopt::Long qw(:config pass_through);
 
 use Unicorn::Manager;
 
@@ -16,9 +16,6 @@ Actions
     show
         dumps a structure of user ids and the process ids of masters
         and their children
-    json
-        dumps a structure of user names and the process ids of masters
-        and their children as json
     start
         starts a users unicorn server, requires --config to be specified
     stop
@@ -33,6 +30,8 @@ Actions
         removes a unicorn worker
     version
         print Unicorn::Manager version
+    query
+        to be implemented
 
 Options
     -u, --user
@@ -57,7 +56,6 @@ Examples
 
 END
 
-my $action = shift || 'help';
 my $user;
 my $config;
 my $args = undef;
@@ -71,6 +69,8 @@ my $result = GetOptions(
     'debug'      => \$DEBUG,
     'rails'      => \$rails,
 );
+
+my ($action, @params) = @ARGV;
 
 if ($> > 0){
     $user = getpwuid $> unless $user;
@@ -102,16 +102,6 @@ my $unicorn = sub {
 my $dispatch_table = {
     help => sub {
         say $HELP;
-        exit 0;
-    },
-    json => sub {
-        my $uc = Unicorn::Manager->new(
-            username => 'nobody',
-            DEBUG => $DEBUG,
-        );
-
-        print $uc->proc->as_json;
-
         exit 0;
     },
     show => sub {
@@ -178,7 +168,8 @@ my $dispatch_table = {
         say Unicorn::Manager::Version->get;
     },
     query => sub {
-        say 'yes' if $unicorn->()->query('has_unicorn', 'a_user');
+        $params[0] = 'help' unless @params;
+        print $unicorn->()->query(@params);
     },
 };
 

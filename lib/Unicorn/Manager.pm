@@ -102,15 +102,57 @@ sub start {
 }
 
 sub query {
+    # TODO
+    # Put all of this into Unicorn::Manager::Query or similar
     my ($self, $query, @params) = @_;
+    my $render = sub {
+        my $status = shift;
+        my $message = shift;
+        my $data = shift;
+
+        my $json = JSON->new->utf8(1);
+
+        return $json->encode(
+            {
+                status => $status,
+                message => $message || undef,
+                data => $data || undef,
+            }
+        );
+    };
 
     my $dispatch_table = {
         has_unicorn => sub {
-            return 1;
+            my $user = shift @params;
+            return $render->(0, 'no user defined') unless $user;
+            return $render->(1, 'user has unicorn');
+        },
+        running => sub {
+            # TODO
+            # fix the encode->decode->encode
+            return $render->(1, 'running unicorns', JSON::decode_json($self->proc->as_json));
+        },
+        help => sub {
+            my $help = {
+                has_unicorn => {
+                    description => 'return true or false',
+                    params => ['username'],
+                },
+                running => {
+                    description => 'return unicorn masters and children running for all users',
+                    params => [],
+                },
+            };
+            return $render->(1, 'uc.pl query options', $help);
         },
     };
 
-    $dispatch_table->{$query}->(@params);
+    if (exists $dispatch_table->{$query}){
+        $dispatch_table->{$query}->(@params);
+    }
+    else {
+        $dispatch_table->{help}->();
+    }
 
 }
 
@@ -297,7 +339,7 @@ This is an unstable development release not ready for production!
 
 =head1 VERSION
 
-Version 0.005005
+Version 0.005007
 
 =head1 SYNOPSIS
 
@@ -445,6 +487,12 @@ Adds num workers to the users unicorn. num defaults to 1.
     my $result = $unicorn->remove_worker({ num => 3 });
 
 Removes num workers but maximum of workers count -1. num defaults to 1.
+
+=head2 query
+
+NOT YET IMPLEMETED.
+
+An interface to query information about running unicorns and users.
 
 =head1 AUTHOR
 
