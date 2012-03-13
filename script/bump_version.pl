@@ -15,9 +15,9 @@ my $version = Unicorn::Manager::Version->get;
 
 my @files = qx[grep $old_version -l \$(find -iname *.p?)];
 
-for (@files){
+for (@files) {
     chomp;
-    edit_file { s/$old_version/$version/g } $_;
+    edit_file {s/$old_version/$version/g} $_;
 }
 
 say "bumped version from $old_version to $version";

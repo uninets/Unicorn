@@ -19,19 +19,17 @@ Options
 
 END
 
-my $user;
-my $port;
+my $user   = undef;
+my $port   = undef;
 my $daemon = 1;
 
 my $result = GetOptions(
     'user|u=s'   => \$user,
-    'port|p=s' => \$port,
+    'port|p=s'   => \$port,
     'daemon|d=s' => \$daemon,
 );
 
-my $server = Unicorn::Manager::Server->new(
-    user => $user,
-);
+my $server = Unicorn::Manager::Server->new( user => $user, );
 
 Proc::Daemon::init if $daemon;
 

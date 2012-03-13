@@ -1,7 +1,7 @@
 use Test::More;
 
 BEGIN {
-    use_ok( 'Unicorn::Manager::CLI' ) || print "Bail out!";
+    use_ok('Unicorn::Manager::CLI') || print "Bail out!";
     use_ok( 'Unicorn::Manager::Version' || print "No version information!" );
 }
 

@@ -38,6 +38,8 @@
             "Getopt::Long" : 0,
             "JSON" : 0,
             "Moo" : 0,
+            "Net::Server::NonBlocking" : 0,
+            "Proc::Daemon" : 0,
             "Test::More" : 0,
             "Time::HiRes" : 0,
             "YAML" : 0,

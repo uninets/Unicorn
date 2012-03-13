@@ -6,12 +6,12 @@ use version;
 
 sub new {
     my $class = shift;
-    my $self = {};
+    my $self  = {};
     return bless $self, $class;
 }
 
 sub get {
-    my $self = shift;
+    my $self    = shift;
     my $VERSION = version->declare('0.06.00')->numify;
     return $VERSION;
 }

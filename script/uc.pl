@@ -58,7 +58,7 @@ END
 
 my $user;
 my $config;
-my $args = undef;
+my $args  = undef;
 my $DEBUG = 0;
 my $rails = 1;
 
@@ -70,9 +70,9 @@ my $result = GetOptions(
     'rails'      => \$rails,
 );
 
-my ($action, @params) = @ARGV;
+my ( $action, @params ) = @ARGV;
 
-if ($> > 0){
+if ( $> > 0 ) {
     $user = getpwuid $> unless $user;
 }
 else {
@@ -107,24 +107,24 @@ my $dispatch_table = {
     show => sub {
         my $uc = Unicorn::Manager::CLI->new(
             username => 'nobody',
-            DEBUG => $DEBUG,
+            DEBUG    => $DEBUG,
         );
 
         my $uidref = $uc->proc->process_table->ptable;
 
-        for (keys %{$uidref}){
+        for ( keys %{$uidref} ) {
             my $username = getpwuid $_;
-            my $pidref = $uidref->{$_};
+            my $pidref   = $uidref->{$_};
 
             print "$username:\n";
 
-            for my $master (keys %{$pidref}){
+            for my $master ( keys %{$pidref} ) {
                 print "    master: $master\n";
-                for my $worker (@{$pidref->{$master}}){
-                    if (ref($worker) ~~ 'HASH'){
-                        for (keys %$worker){
+                for my $worker ( @{ $pidref->{$master} } ) {
+                    if ( ref($worker) ~~ 'HASH' ) {
+                        for ( keys %$worker ) {
                             print "        new master: " . $_ . "\n";
-                            print "            new worker: $_\n" for @{$worker->{$_}}
+                            print "            new worker: $_\n" for @{ $worker->{$_} };
                         }
                     }
                     else {
@@ -147,22 +147,22 @@ my $dispatch_table = {
             use Data::Dumper;
             say " -> \$arg_ref => " . Dumper($arg_ref);
         }
-        $unicorn->()->start({config => $config, args => $arg_ref});
+        $unicorn->()->start( { config => $config, args => $arg_ref } );
     },
     stop => sub {
         $unicorn->()->stop;
     },
     restart => sub {
-        $unicorn->()->restart({ mode => 'graceful' });
+        $unicorn->()->restart( { mode => 'graceful' } );
     },
     reload => sub {
         $unicorn->()->reload;
     },
     add_worker => sub {
-        $unicorn->()->add_worker({ num => 1 });
+        $unicorn->()->add_worker( { num => 1 } );
     },
     rm_worker => sub {
-        $unicorn->()->remove_worker({ num => 1 });
+        $unicorn->()->remove_worker( { num => 1 } );
     },
     version => sub {
         say Unicorn::Manager::Version->get;
@@ -173,7 +173,7 @@ my $dispatch_table = {
     },
 };
 
-if (exists $dispatch_table->{$action}){
+if ( exists $dispatch_table->{$action} ) {
     $dispatch_table->{$action}->();
 }
 else {

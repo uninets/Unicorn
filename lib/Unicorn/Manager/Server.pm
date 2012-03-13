@@ -10,19 +10,22 @@ use IO::Socket;
 use Net::Server::NonBlocking;
 use Unicorn::Manager::CLI;
 
-has listen => ( is => 'rw', default => sub { return 'localhost' } );
-has port   => ( is => 'rw', default => sub { return 4242 } );
-has user   => ( is => 'rw', default => sub { return 'nobody' } );
-has group  => ( is => 'rw', default => sub { return 'nobody' } );
+has listen => ( is => 'rw' );
+has port   => ( is => 'rw' );
+has user   => ( is => 'rw' );
+has group  => ( is => 'rw' );
 has server => ( is => 'rw' );
 has cli    => ( is => 'rw' );
 
 sub BUILD {
     my $self = shift;
 
-    my $server = Net::Server::NonBlocking->new();
+    $self->user('nobody')       unless $self->user;
+    $self->group( $self->user ) unless $self->group;
+    $self->port(4242)           unless $self->port;
+    $self->listen('localhost')  unless $self->listen;
 
-    $self->server($server) unless $self->server;
+    $self->server( Net::Server::NonBlocking->new() ) unless $self->server;
     $self->cli( Unicorn::Manager::CLI->new( username => $self->user ) ) unless $self->cli;
 
 }
@@ -31,8 +34,7 @@ sub run {
     my ($self) = @_;
 
     $self->server->add(
-        {
-            server_name  => 'ucd.pl',
+        {   server_name  => 'ucd.pl',
             local_port   => $self->port,
             timeout      => 10,
             delimiter    => "\n",
@@ -49,19 +51,21 @@ sub run {
                 print $client "bye\n";
             },
             on_recv_msg => sub {
-                my $this    = shift;
-                my $client  = shift;
-                my @params  = @_;
+                my $this   = shift;
+                my $client = shift;
+                my $params = shift;
 
-                if ($params[0] ~~ /exit/){
-                    $this->erase_client( 'ucd.pl', $client ) if $params[0] ~~ /exit/;
+                # for telnet compatibility
+                ( $params = $params ) =~ s/\r//;
+
+                my ( $query, @params ) = split ' ', $params;
+
+                if ( $query ~~ /exit/ ) {
+                    $this->erase_client( 'ucd.pl', $client );
                     return 1;
                 }
 
-                # for telnet compatibility
-                ($_ = $_) =~ s/\r// for @params;
-
-                print $client $self->cli->query(@params)
+                print $client $self->cli->query( $query, @params );
             },
         }
     );

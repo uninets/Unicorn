@@ -10,15 +10,15 @@ BEGIN {
     use_ok 'Unicorn::Manager::CLI';
 }
 
-ok ( my $unicorn = Unicorn::Manager::CLI->new( username => 'nobody' ));
+ok( my $unicorn = Unicorn::Manager::CLI->new( username => 'nobody' ) );
 
-isa_ok ( $unicorn, 'Unicorn::Manager::CLI' );
+isa_ok( $unicorn, 'Unicorn::Manager::CLI' );
 
-for (@attributes){
-    can_ok ( $unicorn, $_ );
+for (@attributes) {
+    can_ok( $unicorn, $_ );
 }
 
-for (@methods){
-    can_ok ( $unicorn, $_ );
+for (@methods) {
+    can_ok( $unicorn, $_ );
 }
 
