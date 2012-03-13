@@ -6,9 +6,12 @@ use strict;
 use warnings;
 use autodie;
 use Moo;
-use IO::Socket;
-use Net::Server::NonBlocking;
+use Unicorn::Manager::Server::PreFork;
 use Unicorn::Manager::CLI;
+use JSON;
+use Try::Tiny;
+
+extends 'Net::Server::PreFork';
 
 has listen => ( is => 'rw' );
 has port   => ( is => 'rw' );
@@ -16,6 +19,7 @@ has user   => ( is => 'rw' );
 has group  => ( is => 'rw' );
 has server => ( is => 'rw' );
 has cli    => ( is => 'rw' );
+has json   => ( is => 'rw' );
 
 sub BUILD {
     my $self = shift;
@@ -24,53 +28,40 @@ sub BUILD {
     $self->group( $self->user ) unless $self->group;
     $self->port(4242)           unless $self->port;
     $self->listen('localhost')  unless $self->listen;
+    $self->json( JSON->new->utf8(1) );
 
-    $self->server( Net::Server::NonBlocking->new() ) unless $self->server;
     $self->cli( Unicorn::Manager::CLI->new( username => $self->user ) ) unless $self->cli;
 
 }
 
-sub run {
-    my ($self) = @_;
+sub process_request {
+    my $self = shift;
 
-    $self->server->add(
-        {   server_name  => 'ucd.pl',
-            local_port   => $self->port,
-            timeout      => 10,
-            delimiter    => "\n",
-            on_connected => sub {
-                my $self   = shift;
-                my $client = shift;
+    while (<STDIN>) {
+        s/\r?\n$//;
+        my $json_string = $_;
+        my $response = '{"status":0,"data":{},"message":"invalid request"}';
 
-                print $client "welcome to ucd.pl\n";
-            },
-            on_disconnected => sub {
-                my $self   = shift;
-                my $client = shift;
-
-                print $client "bye\n";
-            },
-            on_recv_msg => sub {
-                my $this   = shift;
-                my $client = shift;
-                my $params = shift;
-
-                # for telnet compatibility
-                ( $params = $params ) =~ s/\r//;
-
-                my ( $query, @params ) = split ' ', $params;
-
-                if ( $query ~~ /exit/ ) {
-                    $this->erase_client( 'ucd.pl', $client );
-                    return 1;
-                }
-
-                print $client $self->cli->query( $query, @params );
-            },
+        try {
+            my $data = $self->json->decode($json_string);
+            if ( exists $data->{query} ) {
+                $response = $self->cli->query( $data->{query}, @{$data->{args}} );
+            }
+            print $response;
         }
-    );
+        catch {
+            print "$response\n";
+            print "ERROR: $_\n";
+            last;
+        };
 
-    $self->server->start;
+        last;
+    }
+}
+
+sub start {
+    my $self = shift;
+    $self->run( port => $self->port );
 }
 
 1;

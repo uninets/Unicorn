@@ -1,7 +1,18 @@
 package Unicorn::Manager::Types;
 
-# TODO collection of coderefs to be used as type constraints
+use Moo;
+use 5.010;
 
+sub hashref {
+    return sub {
+        die "Failed type constraint. Should be a HashRef but is a " . ref( $_[0] )
+            if ref( $_[0] ) ne 'HASH';
+        }
+}
+
+1;
+
+__END__
 
 =head1 NAME
 
@@ -13,9 +24,13 @@ Version 0.006000
 
 =head1 SYNOPSIS
 
-Currently containing nothing.
+Types used within Unicorn::Manager classes.
 
 =head1 TYPES
+
+=head2 hashref
+
+Attribute has to be a reference to a hash.
 
 =head1 AUTHOR
 

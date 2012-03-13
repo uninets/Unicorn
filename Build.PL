@@ -41,6 +41,7 @@ my $build = Module::Build->new(
         'Cwd'                      => 0,
         'Proc::Daemon'             => 0,
         'Net::Server::NonBlocking' => 0,
+        'IO::Socket'               => 0,
     },
 
     build_requires => { 'Module::Build' => 0.38, },

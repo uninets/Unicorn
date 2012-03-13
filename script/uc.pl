@@ -1,10 +1,16 @@
 #!/usr/bin/perl
 
 use 5.010;
+use strict;
 use warnings;
+
+$| = 1;
+
 use Getopt::Long qw(:config pass_through);
 
 use Unicorn::Manager::CLI;
+use IO::Socket;
+use JSON;
 
 my $HELP = <<"END";
 Synopsis
@@ -58,6 +64,8 @@ END
 
 my $user;
 my $config;
+my $host;
+my $port  = 4242;
 my $args  = undef;
 my $DEBUG = 0;
 my $rails = 1;
@@ -68,6 +76,8 @@ my $result = GetOptions(
     'args=s'     => \$args,
     'debug'      => \$DEBUG,
     'rails'      => \$rails,
+    'host|h=s'   => \$host,
+    'port|p=i'   => \$port,
 );
 
 my ( $action, @params ) = @ARGV;
@@ -99,7 +109,7 @@ my $unicorn = sub {
     );
 };
 
-my $dispatch_table = {
+my $dispatch_cli = {
     help => sub {
         say $HELP;
         exit 0;
@@ -173,11 +183,49 @@ my $dispatch_table = {
     },
 };
 
-if ( exists $dispatch_table->{$action} ) {
-    $dispatch_table->{$action}->();
+my $dispatch_server = {
+    query => sub {
+        my ( $query, @args ) = @params;
+        my $data = {
+            query => $query,
+            args  => [@args],
+        };
+        my $json = JSON->new->utf8(1);
+
+        my $sock = IO::Socket::INET->new(
+            PeerAddr => $host || 'localhost',
+            PeerPort => $port || 4242,
+            Proto    => 'tcp',
+        );
+
+        my $json_string = $json->encode($data);
+
+        print $sock "$json_string\n";
+
+        while (<$sock>){
+            print;
+            #last if /\n/;
+        }
+
+        close $sock;
+    },
+};
+
+if ($host) {
+    if ( exists $dispatch_server->{$action} ) {
+        $dispatch_server->{$action}->();
+    }
+    else {
+        say "No action $action defined";
+    }
 }
 else {
-    say "No action $action defined";
+    if ( exists $dispatch_cli->{$action} ) {
+        $dispatch_cli->{$action}->();
+    }
+    else {
+        say "No action $action defined";
+    }
 }
 
 exit 0;

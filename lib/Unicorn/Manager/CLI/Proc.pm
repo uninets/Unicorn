@@ -7,12 +7,11 @@ use warnings;
 use autodie;
 use 5.010;
 
+use Unicorn::Manager::Types;
+
 has ptable => (
     is  => 'rw',
-    isa => sub {
-        die "Failed type constraint for ptable. Should be a HashRef but is a " . ref( $_[0] )
-            if ref( $_[0] ) ne 'HASH';
-    },
+    isa => Unicorn::Manager::Types::hashref,
 );
 
 sub BUILD {
