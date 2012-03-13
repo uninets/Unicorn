@@ -5,6 +5,7 @@ use warnings;
 use Getopt::Long qw(:config pass_through);
 
 use Unicorn::Manager::Server;
+use Proc::Daemon;
 
 my $HELP = <<"END";
 Synopsis
@@ -20,15 +21,19 @@ END
 
 my $user;
 my $port;
+my $daemon = 1;
 
 my $result = GetOptions(
     'user|u=s'   => \$user,
     'port|p=s' => \$port,
+    'daemon|d=s' => \$daemon,
 );
 
 my $server = Unicorn::Manager::Server->new(
     user => $user,
 );
+
+Proc::Daemon::init if $daemon;
 
 $server->run();
 

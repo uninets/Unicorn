@@ -22,8 +22,8 @@ sub BUILD {
 
     my $server = Net::Server::NonBlocking->new();
 
-    $self->server($server);
-    $self->cli( Unicorn::Manager::CLI->new( username => $self->user ) );
+    $self->server($server) unless $self->server;
+    $self->cli( Unicorn::Manager::CLI->new( username => $self->user ) ) unless $self->cli;
 
 }
 
@@ -77,13 +77,56 @@ __END__
 
 Unicorn::Manager::Server - A Perl interface to the Unicorn webserver
 
-=head1 WARNING
+=head1 WARNING!
 
 This is an unstable development release not ready for production!
 
 =head1 VERSION
 
 Version 0.006000
+
+=head1 SYNOPSIS
+
+The Unicorn::Manager::Server module provides a json interface to query information about running unicorn processes and users.
+
+Also some assumption are made about your environment:
+    you use Linux (the module relies on /proc)
+    you use the bash shell
+    your unicorn config is located in your apps root directory
+    every user is running one single application
+
+I will add and improve what is needed though. Requests and patches are
+welcome.
+
+=head1 ATTRIBUTES/CONSTRUCTION
+
+=head2 listen
+
+Address to listen on. Defaults to localhost.
+
+=head2 port
+
+Port to bind to.
+
+=head2 user
+
+Username to use for Unicorn::Manager::CLI instances.
+
+=head2 group
+
+Not in use yet.
+
+=head2 server
+
+A Net::Server::NonBlocking instance. Will be created automatically unless provided in construction.
+
+=head2 cli
+
+A Unicorn::Manager::CLI instance. Will be created automatically unless provided in construction.
+
+=head1 METHODS
+
+=head2 run
 
 =head1 AUTHOR
 

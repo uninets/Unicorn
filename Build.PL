@@ -41,6 +41,8 @@ my $build = Module::Build->new(
         'Time::HiRes'                  => 0,
         'bareword::filehandles'        => 0,
         'Cwd'                          => 0,
+        'Proc::Daemon'                 => 0,
+        'Net::Server::NonBlocking'     => 0,
     },
 
     build_requires => {

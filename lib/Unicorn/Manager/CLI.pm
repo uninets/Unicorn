@@ -333,7 +333,7 @@ sub BUILD {
 
 Unicorn::Manager::CLI - A Perl interface to the Unicorn webserver
 
-=head1 WARNING
+=head1 WARNING!
 
 This is an unstable development release not ready for production!
 
