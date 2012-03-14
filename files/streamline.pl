@@ -4,10 +4,12 @@ use 5.010;
 use feature 'say';
 use strict;
 use warnings;
+use autodie;
 use lib 'lib';
 use Unicorn::Manager::Version;
 use Perl::Tidy;
 use File::Find;
+use File::Copy;
 use File::Slurp 'edit_file';
 
 sub bump_version {
@@ -29,6 +31,7 @@ sub bump_version {
 
 sub tidy_up {
     my @files;
+
     find(
         sub {
             push( @files, $File::Find::name ) if ( /\.p[lm]$/i && !-d );
@@ -36,10 +39,20 @@ sub tidy_up {
         '.'
     );
 
-    say for @files;
+    for (@files) {
+        say "Tidy up $_";
+        my $destination = "$_.tidy_up";
+        Perl::Tidy::perltidy(
+            source      => $_,
+            destination => $destination,
+            perltidyrc  => 'files/perltidyrc',
+        );
+        move "$_.tidy_up", $_;
+    }
 }
 
 tidy_up();
+bump_version();
 
 exit 0;
 
