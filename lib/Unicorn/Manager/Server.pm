@@ -10,7 +10,10 @@ use JSON;
 use Try::Tiny;
 use Unicorn::Manager::Server::PreFork;
 
-has listen => ( is => 'rw' );
+has listen => (
+    is => 'rw',
+    isa => Unicorn::Manager::Types::local_address,
+);
 has port   => ( is => 'rw' );
 has user   => ( is => 'rw' );
 has group  => ( is => 'rw' );

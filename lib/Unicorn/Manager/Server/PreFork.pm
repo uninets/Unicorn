@@ -1,18 +1,23 @@
 package Unicorn::Manager::Server::PreFork;
 
-use 5.010;
+use Moo;
 use feature 'say';
 use strict;
 use warnings;
 use autodie;
-use Moo;
+use 5.010;
+
 use Unicorn::Manager::CLI;
+use Unicorn::Manager::Types;
 use JSON;
 use Try::Tiny;
 
 extends 'Net::Server::PreFork';
 
-has listen => ( is => 'rw' );
+has listen => (
+    is => 'rw',
+    isa => Unicorn::Manager::Types::local_address,
+);
 has port   => ( is => 'rw' );
 has user   => ( is => 'rw' );
 has group  => ( is => 'rw' );

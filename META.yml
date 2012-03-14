@@ -29,6 +29,9 @@ provides:
   Unicorn::Manager::Server:
     file: lib/Unicorn/Manager/Server.pm
     version: 0.006000
+  Unicorn::Manager::Server::PreFork:
+    file: lib/Unicorn/Manager/Server/PreFork.pm
+    version: 0
   Unicorn::Manager::Types:
     file: lib/Unicorn/Manager/Types.pm
     version: 0.006000
