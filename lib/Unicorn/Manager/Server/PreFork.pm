@@ -38,12 +38,12 @@ sub process_request {
     while (<STDIN>) {
         s/\r?\n$//;
         my $json_string = $_;
-        my $response = '{"status":0,"data":{},"message":"invalid request"}';
+        my $response    = '{"status":0,"data":{},"message":"invalid request"}';
 
         try {
             my $data = $self->json->decode($json_string);
             if ( exists $data->{query} ) {
-                $response = $self->cli->query( $data->{query}, @{$data->{args}} );
+                $response = $self->cli->query( $data->{query}, @{ $data->{args} } );
             }
             print $response;
         }

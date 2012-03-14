@@ -117,7 +117,8 @@ sub query {
         my $json = JSON->new->utf8(1);
 
         return $json->encode(
-            {   status  => $status,
+            {
+                status  => $status,
                 message => $message || undef,
                 data    => $data || undef,
             }
