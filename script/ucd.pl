@@ -33,5 +33,5 @@ my $server = Unicorn::Manager::Server->new( user => $user, );
 
 Proc::Daemon::init if $daemon;
 
-$server->start();
+$server->run();
 

@@ -1,4 +1,4 @@
-package Unicorn::Manager::Server;
+package Unicorn::Manager::Server::PreFork;
 
 use 5.010;
 use feature 'say';
@@ -6,15 +6,18 @@ use strict;
 use warnings;
 use autodie;
 use Moo;
+use Unicorn::Manager::CLI;
 use JSON;
 use Try::Tiny;
-use Unicorn::Manager::Server::PreFork;
+
+extends 'Net::Server::PreFork';
 
 has listen => ( is => 'rw' );
 has port   => ( is => 'rw' );
 has user   => ( is => 'rw' );
 has group  => ( is => 'rw' );
-has server => ( is => 'rw' );
+has cli    => ( is => 'rw' );
+has json   => ( is => 'rw' );
 
 sub BUILD {
     my $self = shift;
@@ -24,20 +27,38 @@ sub BUILD {
     $self->port(4242)           unless $self->port;
     $self->listen('localhost')  unless $self->listen;
 
-    $self->server(
-        Unicorn::Manager::Server::PreFork->new(
-            user   => $self->user,
-            group  => $self->group,
-            port   => $self->port,
-            listen => $self->listen,
-        )
-    );
+    $self->json( JSON->new->utf8(1) );
+    $self->cli( Unicorn::Manager::CLI->new( username => $self->user ) ) unless $self->cli;
 
 }
 
-sub run {
+sub process_request {
     my $self = shift;
-    $self->server->start();
+
+    while (<STDIN>) {
+        s/\r?\n$//;
+        my $json_string = $_;
+        my $response = '{"status":0,"data":{},"message":"invalid request"}';
+
+        try {
+            my $data = $self->json->decode($json_string);
+            if ( exists $data->{query} ) {
+                $response = $self->cli->query( $data->{query}, @{$data->{args}} );
+            }
+            print $response;
+        }
+        catch {
+            print "$response\n";
+            last;
+        };
+
+        last;
+    }
+}
+
+sub start {
+    my $self = shift;
+    $self->run( port => $self->port );
 }
 
 1;
@@ -87,14 +108,22 @@ Username to use for Unicorn::Manager::CLI instances.
 
 Not in use yet.
 
-=head2 server
+=head2 cli
 
-A Unicorn::Manager::Server::* instance. Will be created automatically unless provided in construction.
-Currently only Unicorn::Manager::Server::Prefork is implemented.
+A Unicorn::Manager::CLI instance. Will be created automatically unless provided in construction.
+
+=head2 json
+
+JSON instance. Automatically created with JSON->new->utf8(1).
 
 =head1 METHODS
 
-=head2 run
+=head2 start
+
+Start the server.
+
+=head2 process_request
+
 
 =head1 AUTHOR
 

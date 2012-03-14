@@ -157,29 +157,29 @@ my $dispatch_cli = {
             use Data::Dumper;
             say " -> \$arg_ref => " . Dumper($arg_ref);
         }
-        $unicorn->()->start( { config => $config, args => $arg_ref } );
+        return $unicorn->()->start( { config => $config, args => $arg_ref } );
     },
     stop => sub {
-        $unicorn->()->stop;
+        return $unicorn->()->stop;
     },
     restart => sub {
-        $unicorn->()->restart( { mode => 'graceful' } );
+        return $unicorn->()->restart( { mode => 'graceful' } );
     },
     reload => sub {
-        $unicorn->()->reload;
+        return $unicorn->()->reload;
     },
     add_worker => sub {
-        $unicorn->()->add_worker( { num => 1 } );
+        return $unicorn->()->add_worker( { num => 1 } );
     },
     rm_worker => sub {
-        $unicorn->()->remove_worker( { num => 1 } );
+        return $unicorn->()->remove_worker( { num => 1 } );
     },
     version => sub {
-        say Unicorn::Manager::Version->get;
+        return Unicorn::Manager::Version->get;
     },
     query => sub {
         $params[0] = 'help' unless @params;
-        print $unicorn->()->query(@params);
+        return $unicorn->()->query(@params);
     },
 };
 
@@ -199,34 +199,51 @@ my $dispatch_server = {
         );
 
         my $json_string = $json->encode($data);
+        my $res;
+
+        if ( not $sock ) {
+            say "Apparently the Unicorn::Manager::Server is not running or not accessible.";
+            say "Try running without the host command line switch or check your firewall.";
+
+            exit 1;
+        }
 
         print $sock "$json_string\n";
 
-        while (<$sock>){
-            print;
-            #last if /\n/;
+        while (<$sock>) {
+            $res .= $_;
         }
 
         close $sock;
+
+        return $res;
     },
+};
+
+my $response;
+my $no_such_action = sub {
+    say "No action $action defined";
+    exit 1;
 };
 
 if ($host) {
     if ( exists $dispatch_server->{$action} ) {
-        $dispatch_server->{$action}->();
+        $response = $dispatch_server->{$action}->();
     }
     else {
-        say "No action $action defined";
+        $no_such_action->();
     }
 }
 else {
     if ( exists $dispatch_cli->{$action} ) {
-        $dispatch_cli->{$action}->();
+        $response = $dispatch_cli->{$action}->();
     }
     else {
-        say "No action $action defined";
+        $no_such_action->();
     }
 }
+
+say $response;
 
 exit 0;
 

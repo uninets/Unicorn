@@ -41,6 +41,7 @@ requires:
   Cwd: 0
   File::Basename: 0
   Getopt::Long: 0
+  IO::Socket: 0
   JSON: 0
   Moo: 0
   Net::Server::NonBlocking: 0
