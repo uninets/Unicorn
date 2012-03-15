@@ -11,7 +11,7 @@ use Try::Tiny;
 use Unicorn::Manager::Server::PreFork;
 
 has listen => (
-    is => 'rw',
+    is  => 'rw',
     isa => Unicorn::Manager::Types::local_address,
 );
 has port   => ( is => 'rw' );

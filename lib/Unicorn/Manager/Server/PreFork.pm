@@ -15,14 +15,14 @@ use Try::Tiny;
 extends 'Net::Server::PreFork';
 
 has listen => (
-    is => 'rw',
+    is  => 'rw',
     isa => Unicorn::Manager::Types::local_address,
 );
-has port   => ( is => 'rw' );
-has user   => ( is => 'rw' );
-has group  => ( is => 'rw' );
-has cli    => ( is => 'rw' );
-has json   => ( is => 'rw' );
+has port  => ( is => 'rw' );
+has user  => ( is => 'rw' );
+has group => ( is => 'rw' );
+has cli   => ( is => 'rw' );
+has json  => ( is => 'rw' );
 
 sub BUILD {
     my $self = shift;
@@ -38,27 +38,44 @@ sub BUILD {
 }
 
 sub process_request {
-    my $self = shift;
+    my $self        = shift;
+    my $timeout_msg = '{"status":0,"data":{},"message":"timeout"}';
 
-    while (<STDIN>) {
-        s/\r?\n$//;
-        my $json_string = $_;
-        my $response    = '{"status":0,"data":{},"message":"invalid request"}';
+    eval {
+        local $SIG{ALRM} = sub { die $timeout_msg };
 
-        try {
-            my $data = $self->json->decode($json_string);
-            if ( exists $data->{query} ) {
-                $response = $self->cli->query( $data->{query}, @{ $data->{args} } );
+        my $timeout = 10;
+
+        my $previous_alarm = alarm $timeout;
+
+        while (<>) {
+            s/\r?\n$//;
+            my $json_string = $_;
+            my $response    = '{"status":0,"data":{},"message":"invalid request"}';
+
+            try {
+                my $data = $self->json->decode($json_string);
+                if ( exists $data->{query} ) {
+                    $response = $self->cli->query( $data->{query}, @{ $data->{args} } );
+                }
+                print $response;
             }
-            print $response;
-        }
-        catch {
-            print "$response\n";
-            last;
-        };
+            catch {
+                print $response;
+            };
 
-        last;
+            return;
+        }
+
+        alarm($previous_alarm);
+
+    };
+
+    if ( $@ =~ $timeout_msg ) {
+        print $timeout_msg;
+        return;
     }
+
 }
 
 sub start {
