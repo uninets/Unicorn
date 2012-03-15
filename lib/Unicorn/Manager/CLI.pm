@@ -1,16 +1,16 @@
-package Unicorn::Manager;
+package Unicorn::Manager::CLI;
 
 use 5.010;
 use strict;
 use warnings;
 use autodie;
 use Moo;
-use Carp;           # for sane error reporting
-use File::Basename; # to strip the config file from the path
+use Carp;              # for sane error reporting
+use File::Basename;    # to strip the config file from the path
 use File::Find;
 use Cwd 'abs_path';
 
-use Unicorn::Manager::Proc;
+use Unicorn::Manager::CLI::Proc;
 use Unicorn::Manager::Version;
 
 has username => ( is => 'rw', required => 1 );
@@ -21,35 +21,36 @@ has proc     => ( is => 'rw' );
 has uid      => ( is => 'rw' );
 has rails    => ( is => 'rw' );
 has version  => (
-    is => 'ro',
+    is      => 'ro',
     default => sub {
         Unicorn::Manager::Version->new;
     },
 );
 
 sub start {
-    my ($self, $opts) = @_;
+    my ( $self, $opts ) = @_;
     my $config_file = $opts->{config};
-    my $args = $opts->{args};
-    my $timeout = 20;
-    if ( -f $config_file ){
-        if (my $pid = fork()){
+    my $args        = $opts->{args};
+    my $timeout     = 20;
+    if ( -f $config_file ) {
+        if ( my $pid = fork() ) {
             my $spawned = 0;
-            while ( $spawned == 0 && $timeout > 0 ){
+            while ( $spawned == 0 && $timeout > 0 ) {
                 sleep 2;
                 $self->proc->refresh;
-                $spawned = 1 if $self->proc->process_table->ptable->{$self->uid};
+                $spawned = 1 if $self->proc->process_table->ptable->{ $self->uid };
                 $timeout--;
             }
             croak "Failed to start unicorn. Timed out.\n" if $timeout <= 0;
 
         }
         else {
+
             # 0 => name
             # 2 => uid
             # 3 => gid
             # 7 => home dir
-            my @passwd = getpwnam($self->username);
+            my @passwd = getpwnam( $self->username );
 
             # drop rights:
             # group rights first because we can not drop group rights
@@ -63,11 +64,11 @@ sub start {
             my $conf_file;
             my $conf_dir;
 
-            if ( defined $config_file && $config_file ne '' ){
-                $conf_dir = dirname($config_file);
+            if ( defined $config_file && $config_file ne '' ) {
+                $conf_dir  = dirname($config_file);
                 $conf_file = basename($config_file);
 
-                if ( $self->_is_abspath($conf_dir) ){
+                if ( $self->_is_abspath($conf_dir) ) {
                     $appdir = $conf_dir;
                 }
                 else {
@@ -75,21 +76,23 @@ sub start {
                 }
             }
 
-            $self->_change_dir ( $appdir );
+            $self->_change_dir($appdir);
 
             my $argstring;
 
-            $argstring .= $_ . ' ' for @{ $args };
+            $argstring .= $_ . ' ' for @{$args};
 
             # dirty hack. remove this!
             $ENV{'RAILS_ENV'} = 'production';
 
             # spawn the unicorn
-            if ($self->rails){
+            if ( $self->rails ) {
+
                 # start unicorn_rails
                 exec "/bin/bash --login -c \"unicorn_rails -c $conf_file $argstring\"";
             }
             else {
+
                 # start unicorn
                 exec "/bin/bash --login -c \"unicorn -c $conf_file $argstring\"";
             }
@@ -102,21 +105,22 @@ sub start {
 }
 
 sub query {
+
     # TODO
-    # Put all of this into Unicorn::Manager::Query or similar
-    my ($self, $query, @params) = @_;
+    # Put all of this into Unicorn::Manager::CLI::Query or similar
+    my ( $self, $query, @params ) = @_;
     my $render = sub {
-        my $status = shift;
+        my $status  = shift;
         my $message = shift;
-        my $data = shift;
+        my $data    = shift;
 
         my $json = JSON->new->utf8(1);
 
         return $json->encode(
             {
-                status => $status,
+                status  => $status,
                 message => $message || undef,
-                data => $data || undef,
+                data    => $data || undef,
             }
         );
     };
@@ -124,30 +128,34 @@ sub query {
     my $dispatch_table = {
         has_unicorn => sub {
             my $user = shift @params;
-            return $render->(0, 'no user defined') unless $user;
-            return $render->(1, 'user has unicorn');
+            return $render->( 0, 'no user defined' ) unless $user;
+            return $render->( 1, 'user has unicorn' );
         },
         running => sub {
+
+            # refresh before querying
+            $self->proc->refresh;
+
             # TODO
             # fix the encode->decode->encode
-            return $render->(1, 'running unicorns', JSON::decode_json($self->proc->as_json));
+            return $render->( 1, 'running unicorns', JSON::decode_json( $self->proc->as_json ) );
         },
         help => sub {
             my $help = {
                 has_unicorn => {
                     description => 'return true or false',
-                    params => ['username'],
+                    params      => ['username'],
                 },
                 running => {
                     description => 'return unicorn masters and children running for all users',
-                    params => [],
+                    params      => [],
                 },
             };
-            return $render->(1, 'uc.pl query options', $help);
+            return $render->( 1, 'uc.pl query options', $help );
         },
     };
 
-    if (exists $dispatch_table->{$query}){
+    if ( exists $dispatch_table->{$query} ) {
         $dispatch_table->{$query}->(@params);
     }
     else {
@@ -157,36 +165,36 @@ sub query {
 }
 
 sub stop {
-    my $self = shift;
-    my $master = ( keys %{ $self->proc->process_table->ptable->{$self->uid} } )[0];
+    my $self   = shift;
+    my $master = ( keys %{ $self->proc->process_table->ptable->{ $self->uid } } )[0];
 
-    $self->_send_signal('QUIT', $master) if $master;
+    $self->_send_signal( 'QUIT', $master ) if $master;
 
     return 1;
 }
 
 sub restart {
-    my ($self, $opts) = @_;
+    my ( $self, $opts ) = @_;
     my $mode = $opts->{mode} || 'graceful';
 
-    my @signals = ( 'USR2', 'WINCH', 'QUIT');
-    my $master = ( keys %{ $self->proc->process_table->ptable->{$self->uid} } )[0];
+    my @signals = ( 'USR2', 'WINCH', 'QUIT' );
+    my $master = ( keys %{ $self->proc->process_table->ptable->{ $self->uid } } )[0];
 
     my $err = 0;
 
-    for (@signals){
-        $err += $self->_send_signal ($_, $master);
+    for (@signals) {
+        $err += $self->_send_signal( $_, $master );
         sleep 5;
     }
 
-    if ( (defined $mode && $mode eq 'hard') || $err ){
+    if ( ( defined $mode && $mode eq 'hard' ) || $err ) {
         $err = 0;
         $err += $self->stop;
         sleep 3;
         $err += $self->start;
     }
 
-    if ($err){
+    if ($err) {
         carp "error restarting unicorn! error code: $err\n";
         return 0;
     }
@@ -199,7 +207,7 @@ sub reload {
     my $self = shift;
     my $err;
 
-    for my $pid (keys %{ $self->proc->process_table->ptable->{$self->uid} }){
+    for my $pid ( keys %{ $self->proc->process_table->ptable->{ $self->uid } } ) {
         $err = $self->_send_signal( 'HUP', $pid );
     }
 
@@ -207,18 +215,20 @@ sub reload {
 }
 
 sub read_config {
-    my $self = shift;
+    my $self     = shift;
     my $filename = shift;
+
     # TODO
     # should return a config object
     #
-    # all config related stuff should go into a seperate class anyway: Unicorn::Manager::Config
+    # all config related stuff should go into a seperate class anyway: Unicorn::Manager::CLI::Config
     return 0;
 }
 
 sub write_config {
-    my $self = shift;
+    my $self     = shift;
     my $filename = shift;
+
     # TODO
     # this one wont be fun ..
     # create a unicorn.conf from config hash
@@ -227,12 +237,12 @@ sub write_config {
     #
     # should return a string. could be written to file or screen.
     #
-    # all config related stuff should go into a seperate class anyway: Unicorn::Manager::Config
+    # all config related stuff should go into a seperate class anyway: Unicorn::Manager::CLI::Config
     return 0;
 }
 
 sub add_worker {
-    my ($self, $opts) = @_;
+    my ( $self, $opts ) = @_;
     my $num = $opts->{num} || 1;
 
     # return error on non positive number
@@ -240,8 +250,8 @@ sub add_worker {
 
     my $err = 0;
 
-    for ( 1 .. $num ){
-        my $master = ( keys %{ $self->proc->process_table->ptable->{$self->uid} } )[0];
+    for ( 1 .. $num ) {
+        my $master = ( keys %{ $self->proc->process_table->ptable->{ $self->uid } } )[0];
 
         $err += $self->_send_signal( 'TTIN', $master );
     }
@@ -250,25 +260,25 @@ sub add_worker {
 }
 
 sub remove_worker {
-    my ($self, $opts) = @_;
+    my ( $self, $opts ) = @_;
     my $num = $opts->{num} || 1;
 
     # return error on non positive number
     return 0 unless $num > 0;
 
-    my $err = 0;
-    my $master = ( keys %{ $self->proc->process_table->ptable->{$self->uid} } )[0];
-    my $count = @{ $self->proc->process_table->ptable->{$self->uid}->{$master} };
+    my $err    = 0;
+    my $master = ( keys %{ $self->proc->process_table->ptable->{ $self->uid } } )[0];
+    my $count  = @{ $self->proc->process_table->ptable->{ $self->uid }->{$master} };
 
     # save at least one worker
     $num = $count - 1 if $num >= $count;
 
-    if ($self->DEBUG){
+    if ( $self->DEBUG ) {
         print "\$count => $count\n";
         print "\$num   => $num\n";
     }
 
-    for ( 1 .. $num ){
+    for ( 1 .. $num ) {
         $err += $self->_send_signal( 'TTOU', $master );
     }
 
@@ -279,15 +289,15 @@ sub remove_worker {
 # send a signal to a pid
 #
 sub _send_signal {
-    my ($self, $signal, $pid) = @_;
-    (kill $signal => $pid) ? return 0 : return 1;
+    my ( $self, $signal, $pid ) = @_;
+    ( kill $signal => $pid ) ? return 0 : return 1;
 }
 
 #
 # small piece to check if a path is starting at root
 #
 sub _is_abspath {
-    my ($self, $path) = @_;
+    my ( $self, $path ) = @_;
     return 0 unless $path =~ /^\//;
     return 1;
 }
@@ -297,7 +307,7 @@ sub _is_abspath {
 # requires an absolute path
 #
 sub _change_dir {
-    my ($self, $dir) = @_;
+    my ( $self, $dir ) = @_;
 
     # requires abs path
     return 0 unless $self->_is_abspath($dir);
@@ -315,39 +325,39 @@ sub _change_dir {
 
 sub BUILD {
     my $self = shift;
+
     # does username exist?
-    if ($self->DEBUG){
+    if ( $self->DEBUG ) {
         print "Initializing object with username: " . $self->username . "\n";
     }
-    croak "no such username\n" unless getpwnam($self->username);
+    croak "no such username\n" unless getpwnam( $self->username );
 
-    $self->uid((getpwnam($self->username))[2]);
-    $self->proc(Unicorn::Manager::Proc->new) unless $self->proc;
+    $self->uid( ( getpwnam( $self->username ) )[2] );
+    $self->proc( Unicorn::Manager::CLI::Proc->new ) unless $self->proc;
 
 }
 
 1;
 
-
 =head1 NAME
 
-Unicorn::Manager - A Perl interface to the Unicorn webserver
+Unicorn::Manager::CLI - A Perl interface to the Unicorn webserver
 
-=head1 WARNING
+=head1 WARNING!
 
 This is an unstable development release not ready for production!
 
 =head1 VERSION
 
-Version 0.005007
+Version 0.006000
 
 =head1 SYNOPSIS
 
-The Unicorn::Manager module aimes to provide methods to start, stop and
+The Unicorn::Manager::CLI module aimes to provide methods to start, stop and
 gracefully restart the server. You can add and remove workers on the fly.
 
 TODO:
-Unicorn::Manager::Config should provide methods to create config files and
+Unicorn::Manager::CLI::Config should provide methods to create config files and
 offer an OO interface to the config object.
 
 Until now basically only unicorn_rails is supported. This Lib is a quick hack
@@ -364,7 +374,7 @@ welcome.
 
 =head1 ATTRIBUTES/CONSTRUCTION
 
-Unicorn::Manager has following attributes:
+Unicorn::Manager::CLI has following attributes:
 
 =head2 username
 
@@ -384,7 +394,7 @@ See perldoc Unicon::Config for more information.
 
 =head2 proc
 
-A Unicorn::Manager::Proc object. If omitted it will be created automatically.
+A Unicorn::Manager::CLI::Proc object. If omitted it will be created automatically.
 
 =head2 uid
 
@@ -396,7 +406,7 @@ Currently unused flag.
 
 =head2 version
 
-Get the Unicorn::Manager version.
+Get the Unicorn::Manager::CLI version.
 
 =head2 DEBUG
 
@@ -407,7 +417,7 @@ TODO: Needs to be improved.
 
 =head2 Contruction
 
-    my $unicorn = Unicorn::Manager->new(
+    my $unicorn = Unicorn::Manager::CLI->new(
         username => 'myuser',
         group    => 'mygroup',
     );
@@ -504,7 +514,7 @@ Report bugs at:
 
 =over 2
 
-=item * Unicorn::Manager issue tracker
+=item * Unicorn::Manager::CLI issue tracker
 
 L<https://github.com/mugenken/Unicorn/issues>
 

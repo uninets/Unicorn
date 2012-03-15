@@ -1,4 +1,4 @@
-package Unicorn::Manager::Proc::Table;
+package Unicorn::Manager::CLI::Proc::Table;
 
 use Moo;
 use Time::HiRes 'usleep';
@@ -7,12 +7,11 @@ use warnings;
 use autodie;
 use 5.010;
 
+use Unicorn::Manager::Types;
+
 has ptable => (
-    is => 'rw',
-    isa => sub {
-        die "Failed type constraint for ptable. Should be a HashRef but is a " . ref($_[0])
-            if ref($_[0]) ne 'HASH';
-    },
+    is  => 'rw',
+    isa => Unicorn::Manager::Types::hashref,
 );
 
 sub BUILD {
@@ -47,7 +46,7 @@ sub _parse_ps {
 
     # grab the process table of unicorn_rails processes
     # build tree skeleton
-    for ( qx[ ps fauxn | grep unicorn_rails |grep -v grep ] ){
+    for (qx[ ps fauxn | grep unicorn_rails |grep -v grep ]) {
         ( undef, my $user, my $pid ) = split /\s+/, $_;
         push @users, { $user => $pid };
     }
@@ -61,48 +60,43 @@ sub _parse_ps {
     #
     # build a subtree of processes that have grandparents to
     # sort them into the array of children in the next step
-    for ( @users ) {
-        my ($uid, $current_pid) = each %{$_};
+    for (@users) {
+        my ( $uid, $current_pid ) = each %{$_};
 
         my $found_pid_status = 0;
 
-        while (not $found_pid_status){
+        while ( not $found_pid_status ) {
             $found_pid_status = 1 if -f "/proc/$current_pid/status";
+
             # check every 1ms
             # TODO implement some timeout to prevent endless loop
             Time::HiRes::usleep 1000;
         }
 
         open my $fh, '<', "/proc/$current_pid/status";
-        while (<$fh>){
+        while (<$fh>) {
 
-            if ($_ =~ /PPid:\t\d+/){
+            if ( $_ =~ /PPid:\t\d+/ ) {
                 my ( undef, $parent_pid ) = split /\s+/, $&;
 
                 # ppid not equal to 1 means the process is a worker
                 # or a new master
-                if ($parent_pid ne '1'){
+                if ( $parent_pid ne '1' ) {
 
                     open my $parent_fh, '<', "/proc/$parent_pid/status";
-                    while (<$parent_fh>){
+                    while (<$parent_fh>) {
 
-                        if ($_ =~ /PPid:\t\d+/){
-                            ( undef, my $parent_parent_pid )
-                                = split /\s+/, $&;
+                        if ( $_ =~ /PPid:\t\d+/ ) {
+                            ( undef, my $parent_parent_pid ) = split /\s+/, $&;
 
                             # pppid not equal to one means the process
                             # has a grandparent and therefor is a new
                             # master or a new masters child
-                            if ( $parent_parent_pid ne '1' ){
-                                push @{ $sub_tree
-                                            ->{$uid}
-                                            ->{$parent_parent_pid}
-                                            ->{$parent_pid}
-                                      }, $current_pid;
+                            if ( $parent_parent_pid ne '1' ) {
+                                push @{ $sub_tree->{$uid}->{$parent_parent_pid}->{$parent_pid} }, $current_pid;
                             }
                             else {
-                                push @{ $tree->{$uid}->{$parent_pid} }
-                                    , $current_pid;
+                                push @{ $tree->{$uid}->{$parent_pid} }, $current_pid;
                             }
 
                         }
@@ -118,24 +112,14 @@ sub _parse_ps {
     }
 
     # build processes with grandparents into the tree
-    for my $user ( keys %{$sub_tree} ){
-        for my $grandparent ( keys %{ $sub_tree->{$user} } ){
-            for my $parent (
-                keys %{ $sub_tree->{$user}->{$grandparent} }
-            ){
+    for my $user ( keys %{$sub_tree} ) {
+        for my $grandparent ( keys %{ $sub_tree->{$user} } ) {
+            for my $parent ( keys %{ $sub_tree->{$user}->{$grandparent} } ) {
 
                 my $i = 0;
-                for ( @{ $tree->{$user}->{$grandparent} } ){
-                    if ( $parent == $_ ){
-                        ${ $tree
-                            ->{$user}
-                            ->{$grandparent}
-                         }[$i] = {
-                             $parent => $sub_tree
-                                            ->{$user}
-                                            ->{$grandparent}
-                                            ->{$parent}
-                           };
+                for ( @{ $tree->{$user}->{$grandparent} } ) {
+                    if ( $parent == $_ ) {
+                        ${ $tree->{$user}->{$grandparent} }[$i] = { $parent => $sub_tree->{$user}->{$grandparent}->{$parent} };
                     }
                     $i++;
                 }
@@ -148,7 +132,7 @@ sub _parse_ps {
 
 1;
 
-package Unicorn::Manager::Proc;
+package Unicorn::Manager::CLI::Proc;
 
 use Moo;
 use JSON;
@@ -157,13 +141,11 @@ use warnings;
 use autodie;
 use 5.010;
 
-has process_table => (
-    is => 'rw',
-);
+has process_table => ( is => 'rw', );
 
 sub BUILD {
     my $self = shift;
-    $self->process_table(Unicorn::Manager::Proc::Table->new);
+    $self->process_table( Unicorn::Manager::CLI::Proc::Table->new );
 }
 
 sub refresh {
@@ -174,17 +156,19 @@ sub refresh {
 sub as_json {
     my $self = shift;
 
-    my $user_table = $self->process_table->ptable;
+    my %user_table = %{ $self->process_table->ptable };
 
-    for (keys %$user_table){
+    my @users = keys %user_table;
+
+    for (@users) {
         my $username = getpwuid $_;
-        $user_table->{$username} = $user_table->{$_};
-        delete $user_table->{$_}
+        $user_table{$username} = $user_table{$_};
+        delete $user_table{$_};
     }
 
     my $json = JSON->new->utf8(1);
 
-    return $json->encode($user_table);
+    return $json->encode( {%user_table} );
 }
 
 1;
@@ -193,15 +177,15 @@ __END__
 
 =head1 NAME
 
-Unicorn::Manager::Proc - Process table used by Unicorn::Manager
+Unicorn::Manager::CLI::Proc - Process table used by Unicorn::Manager
 
 =head1 VERSION
 
-Version 0.005007
+Version 0.006000
 
 =head1 SYNOPSIS
 
-The Unicorn::Manager::Proc Module provides a table of unicorn processes.
+The Unicorn::Manager::CLI::Proc Module provides a table of unicorn processes.
 Master/worker states are correctly represented.
 The modules utilizes /proc and thus only works on Linux systems.
 
@@ -209,7 +193,7 @@ The modules utilizes /proc and thus only works on Linux systems.
 
 =head2 Construction
 
-    my $uniman_proc = Unicorn::Manager::Proc->new;
+    my $uniman_proc = Unicorn::Manager::CLI::Proc->new;
 
 =head2 process_table
 

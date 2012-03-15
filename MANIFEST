@@ -5,9 +5,12 @@ META.yml
 META.json
 README
 script/uc.pl
-lib/Unicorn/Manager.pm
-lib/Unicorn/Manager/Proc.pm
+script/ucd.pl
+lib/Unicorn/Manager/CLI.pm
+lib/Unicorn/Manager/CLI/Proc.pm
 lib/Unicorn/Manager/Types.pm
+lib/Unicorn/Manager/Server.pm
+lib/Unicorn/Manager/Server/PreFork.pm
 lib/Unicorn/Manager/Version.pm
 t/00-load.t
 t/01-interface.t

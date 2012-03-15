@@ -17,29 +17,39 @@ no_index:
   directory:
     - t
 provides:
-  Unicorn::Manager:
-    file: lib/Unicorn/Manager.pm
-    version: 0.005007
-  Unicorn::Manager::Proc:
-    file: lib/Unicorn/Manager/Proc.pm
-    version: 0.005007
-  Unicorn::Manager::Proc::Table:
-    file: lib/Unicorn/Manager/Proc.pm
+  Unicorn::Manager::CLI:
+    file: lib/Unicorn/Manager/CLI.pm
+    version: 0.006000
+  Unicorn::Manager::CLI::Proc:
+    file: lib/Unicorn/Manager/CLI/Proc.pm
+    version: 0.006000
+  Unicorn::Manager::CLI::Proc::Table:
+    file: lib/Unicorn/Manager/CLI/Proc.pm
+    version: 0
+  Unicorn::Manager::Server:
+    file: lib/Unicorn/Manager/Server.pm
+    version: 0.006000
+  Unicorn::Manager::Server::PreFork:
+    file: lib/Unicorn/Manager/Server/PreFork.pm
     version: 0
   Unicorn::Manager::Types:
     file: lib/Unicorn/Manager/Types.pm
-    version: 0.005007
+    version: 0.006000
   Unicorn::Manager::Version:
     file: lib/Unicorn/Manager/Version.pm
-    version: 0.005007
+    version: 0.006000
 requires:
   B::Hooks::OP::Check: 0.19
   Carp: 0
   Cwd: 0
   File::Basename: 0
   Getopt::Long: 0
+  IO::Socket: 0
   JSON: 0
   Moo: 0
+  Net::Interface: 0
+  Net::Server::PreFork: 0
+  Proc::Daemon: 0
   Test::More: 0
   Time::HiRes: 0
   YAML: 0
@@ -48,4 +58,4 @@ requires:
   multidimensional: 0
 resources:
   license: http://opensource.org/licenses/mit-license.php
-version: 0.005007
+version: 0.006000

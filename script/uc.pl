@@ -1,10 +1,16 @@
 #!/usr/bin/perl
 
 use 5.010;
+use strict;
 use warnings;
+
+$| = 1;
+
 use Getopt::Long qw(:config pass_through);
 
-use Unicorn::Manager;
+use Unicorn::Manager::CLI;
+use IO::Socket;
+use JSON;
 
 my $HELP = <<"END";
 Synopsis
@@ -58,7 +64,9 @@ END
 
 my $user;
 my $config;
-my $args = undef;
+my $host;
+my $port  = 4242;
+my $args  = undef;
 my $DEBUG = 0;
 my $rails = 1;
 
@@ -68,11 +76,13 @@ my $result = GetOptions(
     'args=s'     => \$args,
     'debug'      => \$DEBUG,
     'rails'      => \$rails,
+    'host|h=s'   => \$host,
+    'port|p=i'   => \$port,
 );
 
-my ($action, @params) = @ARGV;
+my ( $action, @params ) = @ARGV;
 
-if ($> > 0){
+if ( $> > 0 ) {
     $user = getpwuid $> unless $user;
 }
 else {
@@ -92,39 +102,39 @@ $args = "-D" unless defined $args;
 $arg_ref = [ split ',', $args ] if $args;
 
 my $unicorn = sub {
-    return Unicorn::Manager->new(
+    return Unicorn::Manager::CLI->new(
         username => $user,
         rails    => $rails,
         DEBUG    => $DEBUG,
     );
 };
 
-my $dispatch_table = {
+my $dispatch_cli = {
     help => sub {
         say $HELP;
         exit 0;
     },
     show => sub {
-        my $uc = Unicorn::Manager->new(
+        my $uc = Unicorn::Manager::CLI->new(
             username => 'nobody',
-            DEBUG => $DEBUG,
+            DEBUG    => $DEBUG,
         );
 
         my $uidref = $uc->proc->process_table->ptable;
 
-        for (keys %{$uidref}){
+        for ( keys %{$uidref} ) {
             my $username = getpwuid $_;
-            my $pidref = $uidref->{$_};
+            my $pidref   = $uidref->{$_};
 
             print "$username:\n";
 
-            for my $master (keys %{$pidref}){
+            for my $master ( keys %{$pidref} ) {
                 print "    master: $master\n";
-                for my $worker (@{$pidref->{$master}}){
-                    if (ref($worker) ~~ 'HASH'){
-                        for (keys %$worker){
+                for my $worker ( @{ $pidref->{$master} } ) {
+                    if ( ref($worker) ~~ 'HASH' ) {
+                        for ( keys %$worker ) {
                             print "        new master: " . $_ . "\n";
-                            print "            new worker: $_\n" for @{$worker->{$_}}
+                            print "            new worker: $_\n" for @{ $worker->{$_} };
                         }
                     }
                     else {
@@ -147,38 +157,93 @@ my $dispatch_table = {
             use Data::Dumper;
             say " -> \$arg_ref => " . Dumper($arg_ref);
         }
-        $unicorn->()->start({config => $config, args => $arg_ref});
+        return $unicorn->()->start( { config => $config, args => $arg_ref } );
     },
     stop => sub {
-        $unicorn->()->stop;
+        return $unicorn->()->stop;
     },
     restart => sub {
-        $unicorn->()->restart({ mode => 'graceful' });
+        return $unicorn->()->restart( { mode => 'graceful' } );
     },
     reload => sub {
-        $unicorn->()->reload;
+        return $unicorn->()->reload;
     },
     add_worker => sub {
-        $unicorn->()->add_worker({ num => 1 });
+        return $unicorn->()->add_worker( { num => 1 } );
     },
     rm_worker => sub {
-        $unicorn->()->remove_worker({ num => 1 });
+        return $unicorn->()->remove_worker( { num => 1 } );
     },
     version => sub {
-        say Unicorn::Manager::Version->get;
+        return Unicorn::Manager::Version->get;
     },
     query => sub {
         $params[0] = 'help' unless @params;
-        print $unicorn->()->query(@params);
+        return $unicorn->()->query(@params);
     },
 };
 
-if (exists $dispatch_table->{$action}){
-    $dispatch_table->{$action}->();
+my $dispatch_server = {
+    query => sub {
+        my ( $query, @args ) = @params;
+        my $data = {
+            query => $query,
+            args  => [@args],
+        };
+        my $json = JSON->new->utf8(1);
+
+        my $sock = IO::Socket::INET->new(
+            PeerAddr => $host || 'localhost',
+            PeerPort => $port || 4242,
+            Proto    => 'tcp',
+        );
+
+        my $json_string = $json->encode($data);
+        my $res;
+
+        if ( not $sock ) {
+            say "Apparently the Unicorn::Manager::Server is not running or not accessible.";
+            say "Try running without the host command line switch or check your firewall.";
+
+            exit 1;
+        }
+
+        print $sock "$json_string\n";
+
+        while (<$sock>) {
+            $res .= $_;
+        }
+
+        close $sock;
+
+        return $res;
+    },
+};
+
+my $response;
+my $no_such_action = sub {
+    say "No action $action defined";
+    exit 1;
+};
+
+if ($host) {
+    if ( exists $dispatch_server->{$action} ) {
+        $response = $dispatch_server->{$action}->();
+    }
+    else {
+        $no_such_action->();
+    }
 }
 else {
-    say "No action $action defined";
+    if ( exists $dispatch_cli->{$action} ) {
+        $response = $dispatch_cli->{$action}->();
+    }
+    else {
+        $no_such_action->();
+    }
 }
+
+say $response;
 
 exit 0;
 

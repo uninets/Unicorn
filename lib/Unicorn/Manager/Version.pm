@@ -6,13 +6,13 @@ use version;
 
 sub new {
     my $class = shift;
-    my $self = {};
+    my $self  = {};
     return bless $self, $class;
 }
 
 sub get {
-    my $self = shift;
-    my $VERSION = version->declare('0.05.07')->numify;
+    my $self    = shift;
+    my $VERSION = version->declare('0.06.00')->numify;
     return $VERSION;
 }
 
@@ -30,7 +30,7 @@ This is an unstable development release not ready for production!
 
 =head1 VERSION
 
-Version 0.005007
+Version 0.006000
 
 =head1 SYNOPSIS
 

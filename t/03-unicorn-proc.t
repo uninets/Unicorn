@@ -2,9 +2,9 @@ use strict;
 use warnings;
 
 use Test::More tests => 1;
-use Unicorn::Manager::Proc;
+use Unicorn::Manager::CLI::Proc;
 
-my $uni_proc = Unicorn::Manager::Proc->new;
+my $uni_proc = Unicorn::Manager::CLI::Proc->new;
 
-isa_ok $uni_proc, 'Unicorn::Manager::Proc';
+isa_ok $uni_proc, 'Unicorn::Manager::CLI::Proc';
 
