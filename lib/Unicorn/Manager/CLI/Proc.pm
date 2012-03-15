@@ -158,7 +158,9 @@ sub as_json {
 
     my $user_table = $self->process_table->ptable;
 
-    for ( keys %$user_table ) {
+    my @users = keys %$user_table;
+
+    for (@users) {
         my $username = getpwuid $_;
         $user_table->{$username} = $user_table->{$_};
         delete $user_table->{$_};
