@@ -156,19 +156,19 @@ sub refresh {
 sub as_json {
     my $self = shift;
 
-    my $user_table = $self->process_table->ptable;
+    my %user_table = %{ $self->process_table->ptable };
 
-    my @users = keys %$user_table;
+    my @users = keys %user_table;
 
     for (@users) {
         my $username = getpwuid $_;
-        $user_table->{$username} = $user_table->{$_};
-        delete $user_table->{$_};
+        $user_table{$username} = $user_table{$_};
+        delete $user_table{$_};
     }
 
     my $json = JSON->new->utf8(1);
 
-    return $json->encode($user_table);
+    return $json->encode( {%user_table} );
 }
 
 1;

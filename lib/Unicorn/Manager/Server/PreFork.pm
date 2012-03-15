@@ -67,7 +67,7 @@ sub process_request {
             return;
         }
 
-        alarm($previous_alarm);
+        alarm $previous_alarm;
 
     };
 

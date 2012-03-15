@@ -133,6 +133,9 @@ sub query {
         },
         running => sub {
 
+            # refresh before querying
+            $self->proc->refresh;
+
             # TODO
             # fix the encode->decode->encode
             return $render->( 1, 'running unicorns', JSON::decode_json( $self->proc->as_json ) );
