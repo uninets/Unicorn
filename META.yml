@@ -53,6 +53,7 @@ requires:
   Test::More: 0
   Time::HiRes: 0
   YAML: 0
+  autodie: 0
   bareword::filehandles: 0
   indirect: 0
   multidimensional: 0

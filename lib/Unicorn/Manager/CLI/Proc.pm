@@ -156,6 +156,26 @@ sub refresh {
 sub as_json {
     my $self = shift;
 
+    my $json = JSON->new->utf8(1);
+
+    return $json->encode( { $self->as_hash } );
+}
+
+sub as_hash {
+    my $self      = shift;
+    my $with_uids = shift;
+
+    if ($with_uids) {
+        return %{ $self->process_table->ptable };
+    }
+    else {
+        return %{ $self->_replace_uid_with_name };
+    }
+}
+
+sub _replace_uid_with_name {
+    my $self = shift;
+
     my %user_table = %{ $self->process_table->ptable };
 
     my @users = keys %user_table;
@@ -166,9 +186,7 @@ sub as_json {
         delete $user_table{$_};
     }
 
-    my $json = JSON->new->utf8(1);
-
-    return $json->encode( {%user_table} );
+    return {%user_table};
 }
 
 1;
@@ -181,7 +199,7 @@ Unicorn::Manager::CLI::Proc - Process table used by Unicorn::Manager
 
 =head1 VERSION
 
-Version 0.006000
+Version 0.006001
 
 =head1 SYNOPSIS
 
@@ -210,6 +228,14 @@ Refreshes the process table.
 Return process table as json.
 
     my $json_text = $uniman_proc->as_json;
+
+=head2 as_hash
+
+Return process table as hash.
+
+    my %hash_with_uids = $uniman_proc->as_hash(1);
+
+    my %hash_with_usernames = $uniman_proc->as_hash;
 
 =head1 AUTHOR
 

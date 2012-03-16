@@ -26,6 +26,7 @@ my $build = Module::Build->new(
     configure_requires => { 'Module::Build' => 0.38, },
 
     requires => {
+        'autodie'               => 0,
         'Test::More'            => 0,
         'Moo'                   => 0,
         'File::Basename'        => 0,
