@@ -136,37 +136,52 @@ sub git_add_new_files {
 }
 
 sub git_commit {
-    say_ok 'git status:';
-    say_warn $_ for qx[git status];
-    say_err 'enter commit message [finish with "."]';
-    say_prompt;
+    my @status = qx[git status];
+    my $no_commit = grep { $_ ~~ /nothing to commit/ } @status;
 
-    my $message = '';
-    while (<>) {
-        last if /^.\n/;
-        $message .= $_;
-    }
-
-    say $message if $debug;
-
-    if ($message) {
-        say_ok 'commiting to git repo';
-        my $result = qx[git commit -a -m '$message'];
-
-        say $result if $debug;
+    if ($no_commit) {
+        say_ok 'nothing to commit';
     }
     else {
-        say_err 'Canceled due to missing commit message.';
+        say_ok 'git status:';
+        say_warn $_ for @status;
+        say_err 'enter commit message [finish with "."]';
+        say_prompt;
 
-        exit 1;
+        my $message = '';
+        while (<>) {
+            last if /^.\n/;
+            $message .= $_;
+        }
+
+        say $message if $debug;
+
+        if ($message) {
+            say_ok 'commiting to git repo';
+            my $result = qx[git commit -a -m '$message'];
+
+            say $result if $debug;
+        }
+        else {
+            say_err 'Canceled due to missing commit message.';
+
+            exit 1;
+        }
     }
 
     return 1;
 }
 
 sub git_push {
-    say_ok 'pushing to remote';
     my $result = qx[git push 2>&1];
+
+    if ( $result ~~ /Everything up-to-date/ ) {
+        say_ok 'Everything up-to-date.';
+
+    }
+    else {
+        say_ok 'Pushed to git repo';
+    }
 
     say $result if $debug;
 
