@@ -13,6 +13,7 @@ use File::Find;
 use File::Copy;
 use File::Slurp 'edit_file';
 use Getopt::Long;
+use CPAN::Uploader;
 
 my $git         = 0;
 my $cpan        = 0;
@@ -106,6 +107,11 @@ sub bump_version {
     }
 
     return 1;
+}
+
+sub build_meta {
+    my $result = qx[perl Build.PL --meta];
+    say_ok 'Updating META';
 }
 
 sub build_clean {
@@ -212,7 +218,41 @@ sub tidy_up {
     return 1;
 }
 
+sub build_dist {
+    my $result = system 'perl Build.PL --dist 2>&1';
+
+    if ($result) {
+        say_err 'Failed to build dist. Refusing to go on.';
+        exit 1;
+    }
+
+    say_ok 'Built dist';
+}
+
+sub cpan_upload {
+
+    my $version = Unicorn::Manager::Version->get;
+    my ($file) = grep { -f && !-d && /$version/ } glob '*.tar.gz';
+
+    say_err 'PAUSE password:';
+    say_prompt;
+
+    my $pass;
+    while (<>) {
+        $pass = $_;
+        last if /\n/;
+    }
+    chomp $pass;
+
+    my $uploader = CPAN::Uploader->new( { user => 'mugenken', password => $pass } );
+
+    $uploader->upload_file($file);
+
+    say_ok 'Uploaded to cpan!';
+}
+
 build_clean();
+build_meta();
 tidy_up();
 bump_version();
 
@@ -223,7 +263,8 @@ if ($git) {
 }
 
 if ( $cpan && $new_version ) {
-    say_err 'cpan upload not implemented';
+    build_dist();
+    cpan_upload();
 }
 
 exit 0;

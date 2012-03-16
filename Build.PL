@@ -8,12 +8,14 @@ use Getopt::Long qw(:config pass_through);
 
 my $install      = 0;
 my $dist         = 0;
+my $meta         = 0;
 my @script_files = grep { -f and !-d } glob 'script/*';
 my $v            = Unicorn::Manager::Version->new;
 
 GetOptions(
     'install' => \$install,
     'dist'    => \$dist,
+    'meta'    => \$meta,
 );
 
 my $build = Module::Build->new(
@@ -84,18 +86,22 @@ my $build = Module::Build->new(
     },
 );
 
+if ($meta) {
+    $build->dispatch('distmeta');
+}
+
 if ($dist) {
     $build->dispatch('build');
     $build->dispatch('test');
     $build->dispatch('distmeta');
     $build->dispatch('dist');
+    $build->create_build_script();
 }
 
 if ($install) {
     $build->dispatch('build');
     $build->dispatch( 'test', verbose => 1 );
     $build->dispatch('install');
+    $build->create_build_script();
 }
-
-$build->create_build_script();
 
