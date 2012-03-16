@@ -32,7 +32,7 @@ sub bump_version {
 
     my @files = qx[grep $old_version -l \$(find -iname *.p?)];
 
-    if ( $old_version == $version ) {
+    if ( $old_version != $version ) {
         for (@files) {
             chomp;
             edit_file {s/$old_version/$version/g} $_;
@@ -54,7 +54,7 @@ sub build_clean {
         say_pretty 'cleaned up';
     }
     else {
-        say_pretty 'clean';
+        say_pretty 'no need to clean';
     }
 
     return 1;
@@ -75,14 +75,14 @@ sub git_add_new_files {
 
 sub git_commit {
     say_pretty 'commiting to git repo';
-    my $result = system 'git commit -a';
+    my $result = system 'git commit -a 2>&1';
 
     return 1;
 }
 
 sub git_push {
     say_pretty 'pushing to remote';
-    my $result = qx[git push];
+    my $result = qx[git push 2>&1];
 
     return 1;
 }
