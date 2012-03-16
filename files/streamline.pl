@@ -219,7 +219,7 @@ sub tidy_up {
 }
 
 sub build_dist {
-    my $result = system 'perl Build.PL --dist 2>&1';
+    my $result = system 'perl Build.PL --dist 2>&1 > /dev/null';
 
     if ($result) {
         say_err 'Failed to build dist. Refusing to go on.';
@@ -234,14 +234,16 @@ sub cpan_upload {
     my $version = Unicorn::Manager::Version->get;
     my ($file) = grep { -f && !-d && /$version/ } glob '*.tar.gz';
 
-    say_err 'PAUSE password:';
+    say_err 'PAUSE password (will not echo):';
     say_prompt;
 
     my $pass;
+    system 'stty -echo';
     while (<>) {
         $pass = $_;
         last if /\n/;
     }
+    system 'stty echo';
     chomp $pass;
 
     my $uploader = CPAN::Uploader->new( { user => 'mugenken', password => $pass } );
