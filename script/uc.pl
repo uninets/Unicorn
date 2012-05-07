@@ -48,7 +48,7 @@ Options
         optional additional arguments used with action 'start'
         overrides options of the config file
         see section Examples for proper usage
-        "-D" is an additional argument you most likely want to provide
+        "-D" is set default
     --debug
         flag to enable debug output
     --rails
