@@ -259,7 +259,7 @@ This is an unstable development release not ready for production!
 
 =head1 VERSION
 
-Version 0.006006
+Version 0.006007
 
 =head1 SYNOPSIS
 
