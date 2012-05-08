@@ -19,25 +19,25 @@ no_index:
 provides:
   Unicorn::Manager::CLI:
     file: lib/Unicorn/Manager/CLI.pm
-    version: 0.006004
+    version: 0.006006
   Unicorn::Manager::CLI::Proc:
     file: lib/Unicorn/Manager/CLI/Proc.pm
-    version: 0.006004
+    version: 0.006006
   Unicorn::Manager::CLI::Proc::Table:
     file: lib/Unicorn/Manager/CLI/Proc.pm
     version: 0
   Unicorn::Manager::Server:
     file: lib/Unicorn/Manager/Server.pm
-    version: 0.006004
+    version: 0.006006
   Unicorn::Manager::Server::PreFork:
     file: lib/Unicorn/Manager/Server/PreFork.pm
     version: 0
   Unicorn::Manager::Types:
     file: lib/Unicorn/Manager/Types.pm
-    version: 0.006004
+    version: 0.006006
   Unicorn::Manager::Version:
     file: lib/Unicorn/Manager/Version.pm
-    version: 0.006004
+    version: 0.006006
 requires:
   B::Hooks::OP::Check: 0.19
   Carp: 0
@@ -59,4 +59,4 @@ requires:
   multidimensional: 0
 resources:
   license: http://opensource.org/licenses/mit-license.php
-version: 0.006004
+version: 0.006006

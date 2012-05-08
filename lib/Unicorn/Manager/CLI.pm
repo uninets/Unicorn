@@ -339,6 +339,8 @@ sub BUILD {
 
 1;
 
+__END__
+
 =head1 NAME
 
 Unicorn::Manager::CLI - A Perl interface to the Unicorn webserver
@@ -349,7 +351,7 @@ This is an unstable development release not ready for production!
 
 =head1 VERSION
 
-Version 0.006004
+Version 0.006006
 
 =head1 SYNOPSIS
 

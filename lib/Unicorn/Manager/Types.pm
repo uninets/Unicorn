@@ -46,7 +46,7 @@ Unicorn::Manager::Types - Types to be used by Unicorn
 
 =head1 VERSION
 
-Version 0.006004
+Version 0.006006
 
 =head1 SYNOPSIS
 

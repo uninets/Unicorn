@@ -247,3 +247,106 @@ say $response;
 
 exit 0;
 
+__END__
+
+=head1 NAME
+
+uc.pl - A Perl script to manage instances of the Unicorn webserver
+
+=head1 WARNING!
+
+This is an unstable development release not ready for production!
+
+=head1 VERSION
+
+Version 0.006006
+
+=head1 SYNOPSIS
+
+uc.pl is included in the Unicorn::Manager package.
+
+=head1 USAGE
+
+The help and usage information of uc.pl
+
+    Synopsis
+        uc.pl [action] [options]
+
+    Actions
+        help
+            show this help
+        show
+            dumps a structure of user ids and the process ids of masters
+            and their children
+        start
+            starts a users unicorn server, requires --config to be specified
+        stop
+            stops unicorn
+        restart
+            gracefully restarts unicorn
+        reload
+            reload unicorn
+        add_worker
+            adds a unicorn worker
+        rm_worker
+            removes a unicorn worker
+        version
+            print Unicorn::Manager version
+        query
+            to be implemented
+
+    Options
+        -u, --user
+            username of unicorns owner (can be ommited if user is not root)
+        -c, --config
+            path to the unicorn config file
+        --args
+            optional additional arguments used with action 'start'
+            overrides options of the config file
+            see section Examples for proper usage
+            "-D" is set default
+        --debug
+            flag to enable debug output
+        --rails
+            defaults to 1 for now. so it has no effect at all
+
+    Examples
+        uc.pl show
+        uc.pl start -u railsuser -c /home/railsuser/app/unicorn.rb --args "--listen 0.0.0.0:80, -D"
+        uc.pl restart -u railsuser
+        uc.pl add_worker
+
+
+=head1 AUTHOR
+
+Mugen Kenichi, C<< <mugen.kenichi at uninets.eu> >>
+
+=head1 BUGS
+
+Report bugs at:
+
+=over 2
+
+=item * Unicorn::Manager issue tracker
+
+L<https://github.com/mugenken/Unicorn/issues>
+
+=item * support at uninets.eu
+
+C<< <mugen.kenichi at uninets.eu> >>
+
+=back
+
+=head1 SUPPORT
+
+=over 2
+
+=item * Technical support
+
+C<< <mugen.kenichi at uninets.eu> >>
+
+=back
+
+=cut
+
+
