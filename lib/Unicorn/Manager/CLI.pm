@@ -82,8 +82,7 @@ sub start {
 
             $argstring .= $_ . ' ' for @{$args};
 
-            # dirty hack. remove this!
-            $ENV{'RAILS_ENV'} = 'production';
+            $ENV{'RAILS_ENV'} = 'development' unless $ENV{'RAILS_ENV'};
 
             # spawn the unicorn
             if ( $self->rails ) {
