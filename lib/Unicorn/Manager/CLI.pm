@@ -27,15 +27,19 @@ has version  => (
     },
 );
 
-sub start {
+sub start
+{
     my ( $self, $opts ) = @_;
-    my $config_file = $opts->{config};
-    my $args        = $opts->{args};
+    my $config_file = $opts->{ config };
+    my $args        = $opts->{ args };
     my $timeout     = 20;
-    if ( -f $config_file ) {
-        if ( my $pid = fork() ) {
+    if ( -f $config_file )
+    {
+        if ( my $pid = fork() )
+        {
             my $spawned = 0;
-            while ( $spawned == 0 && $timeout > 0 ) {
+            while ( $spawned == 0 && $timeout > 0 )
+            {
                 sleep 2;
                 $self->proc->refresh;
                 $spawned = 1 if $self->proc->process_table->ptable->{ $self->uid };
@@ -44,7 +48,8 @@ sub start {
             croak "Failed to start unicorn. Timed out.\n" if $timeout <= 0;
 
         }
-        else {
+        else
+        {
 
             # 0 => name
             # 2 => uid
@@ -56,55 +61,62 @@ sub start {
             # group rights first because we can not drop group rights
             # after user rights
             # set $HOME to our users home directory
-            $ENV{'HOME'} = $passwd[7];
-            $( = $) = $passwd[3];
-            $< = $> = $passwd[2];
+            $ENV{ 'HOME' } = $passwd[ 7 ];
+            $( = $) = $passwd[ 3 ];
+            $< = $> = $passwd[ 2 ];
 
             my $appdir = '';
             my $conf_file;
             my $conf_dir;
 
-            if ( defined $config_file && $config_file ne '' ) {
-                $conf_dir  = dirname($config_file);
-                $conf_file = basename($config_file);
+            if ( defined $config_file && $config_file ne '' )
+            {
+                $conf_dir  = dirname( $config_file );
+                $conf_file = basename( $config_file );
 
-                if ( $self->_is_abspath($conf_dir) ) {
+                if ( $self->_is_abspath( $conf_dir ) )
+                {
                     $appdir = $conf_dir;
                 }
-                else {
-                    $appdir = abs_path($conf_dir);
+                else
+                {
+                    $appdir = abs_path( $conf_dir );
                 }
             }
 
-            $self->_change_dir($appdir);
+            $self->_change_dir( $appdir );
 
             my $argstring;
 
-            $argstring .= $_ . ' ' for @{$args};
+            $argstring .= $_ . ' ' for @{ $args };
 
             # dirty hack. remove this!
-            $ENV{'RAILS_ENV'} = 'production';
+            $ENV{ 'RAILS_ENV' } = 'production' unless $ENV{ 'RAILS_ENV' };
 
             # spawn the unicorn
-            if ( $self->rails ) {
+            if ( $self->rails )
+            {
 
                 # start unicorn_rails
                 exec "/bin/bash --login -c \"unicorn_rails -c $conf_file $argstring\"";
             }
-            else {
+            else
+            {
 
                 # start unicorn
                 exec "/bin/bash --login -c \"unicorn -c $conf_file $argstring\"";
             }
         }
     }
-    else {
+    else
+    {
         return 0;
     }
     return 1;
 }
 
-sub query {
+sub query
+{
 
     # TODO
     # Put all of this into Unicorn::Manager::CLI::Query or similar
@@ -114,7 +126,7 @@ sub query {
         my $message = shift;
         my $data    = shift;
 
-        my $json = JSON->new->utf8(1);
+        my $json = JSON->new->utf8( 1 );
 
         return $json->encode(
             {
@@ -144,7 +156,7 @@ sub query {
             my $help = {
                 has_unicorn => {
                     description => 'return true or false',
-                    params      => ['username'],
+                    params      => [ 'username' ],
                 },
                 running => {
                     description => 'return unicorn masters and children running for all users',
@@ -155,66 +167,77 @@ sub query {
         },
     };
 
-    if ( exists $dispatch_table->{$query} ) {
-        $dispatch_table->{$query}->(@params);
+    if ( exists $dispatch_table->{ $query } )
+    {
+        $dispatch_table->{ $query }->( @params );
     }
-    else {
-        $dispatch_table->{help}->();
+    else
+    {
+        $dispatch_table->{ help }->();
     }
 
 }
 
-sub stop {
+sub stop
+{
     my $self   = shift;
-    my $master = ( keys %{ $self->proc->process_table->ptable->{ $self->uid } } )[0];
+    my $master = ( keys %{ $self->proc->process_table->ptable->{ $self->uid } } )[ 0 ];
 
     $self->_send_signal( 'QUIT', $master ) if $master;
 
     return 1;
 }
 
-sub restart {
+sub restart
+{
     my ( $self, $opts ) = @_;
-    my $mode = $opts->{mode} || 'graceful';
+    my $mode = $opts->{ mode } || 'graceful';
 
     my @signals = ( 'USR2', 'WINCH', 'QUIT' );
-    my $master = ( keys %{ $self->proc->process_table->ptable->{ $self->uid } } )[0];
+    my $master = ( keys %{ $self->proc->process_table->ptable->{ $self->uid } } )[ 0 ];
 
     my $err = 0;
 
-    for (@signals) {
+    for ( @signals )
+    {
         $err += $self->_send_signal( $_, $master );
         sleep 5;
     }
 
-    if ( ( defined $mode && $mode eq 'hard' ) || $err ) {
+    if ( ( defined $mode && $mode eq 'hard' ) || $err )
+    {
         $err = 0;
         $err += $self->stop;
         sleep 3;
         $err += $self->start;
     }
 
-    if ($err) {
+    if ( $err )
+    {
         carp "error restarting unicorn! error code: $err\n";
         return 0;
     }
-    else {
+    else
+    {
         return 1;
     }
 }
 
-sub reload {
+sub reload
+{
     my $self = shift;
     my $err;
 
-    for my $pid ( keys %{ $self->proc->process_table->ptable->{ $self->uid } } ) {
+    for my $pid ( keys %{ $self->proc->process_table->ptable->{ $self->uid } } )
+    {
         $err = $self->_send_signal( 'HUP', $pid );
     }
 
     $err > 0 ? return 0 : return 1;
 }
 
-sub read_config {
+sub read_config
+{
     my $self     = shift;
     my $filename = shift;
 
@@ -225,7 +248,8 @@ sub read_config {
     return 0;
 }
 
-sub write_config {
+sub write_config
+{
     my $self     = shift;
     my $filename = shift;
 
@@ -241,17 +265,19 @@ sub write_config {
     return 0;
 }
 
-sub add_worker {
+sub add_worker
+{
     my ( $self, $opts ) = @_;
-    my $num = $opts->{num} || 1;
+    my $num = $opts->{ num } || 1;
 
     # return error on non positive number
     return 0 unless $num > 0;
 
     my $err = 0;
 
-    for ( 1 .. $num ) {
-        my $master = ( keys %{ $self->proc->process_table->ptable->{ $self->uid } } )[0];
+    for ( 1 .. $num )
+    {
+        my $master = ( keys %{ $self->proc->process_table->ptable->{ $self->uid } } )[ 0 ];
 
         $err += $self->_send_signal( 'TTIN', $master );
     }
@@ -259,26 +285,29 @@ sub add_worker {
     $err > 0 ? return 0 : return 1;
 }
 
-sub remove_worker {
+sub remove_worker
+{
     my ( $self, $opts ) = @_;
-    my $num = $opts->{num} || 1;
+    my $num = $opts->{ num } || 1;
 
     # return error on non positive number
     return 0 unless $num > 0;
 
     my $err    = 0;
-    my $master = ( keys %{ $self->proc->process_table->ptable->{ $self->uid } } )[0];
-    my $count  = @{ $self->proc->process_table->ptable->{ $self->uid }->{$master} };
+    my $master = ( keys %{ $self->proc->process_table->ptable->{ $self->uid } } )[ 0 ];
+    my $count  = @{ $self->proc->process_table->ptable->{ $self->uid }->{ $master } };
 
     # save at least one worker
     $num = $count - 1 if $num >= $count;
 
-    if ( $self->DEBUG ) {
+    if ( $self->DEBUG )
+    {
         print "\$count => $count\n";
         print "\$num   => $num\n";
     }
 
-    for ( 1 .. $num ) {
+    for ( 1 .. $num )
+    {
         $err += $self->_send_signal( 'TTOU', $master );
     }
 
@@ -288,7 +317,8 @@ sub remove_worker {
 #
 # send a signal to a pid
 #
-sub _send_signal {
+sub _send_signal
+{
     my ( $self, $signal, $pid ) = @_;
     ( kill $signal => $pid ) ? return 0 : return 1;
 }
@@ -296,7 +326,8 @@ sub _send_signal {
 #
 # small piece to check if a path is starting at root
 #
-sub _is_abspath {
+sub _is_abspath
+{
     my ( $self, $path ) = @_;
     return 0 unless $path =~ /^\//;
     return 1;
@@ -306,11 +337,12 @@ sub _is_abspath {
 # cd into the given dir
 # requires an absolute path
 #
-sub _change_dir {
+sub _change_dir
+{
     my ( $self, $dir ) = @_;
 
     # requires abs path
-    return 0 unless $self->_is_abspath($dir);
+    return 0 unless $self->_is_abspath( $dir );
 
     my $dh;
 
@@ -323,16 +355,18 @@ sub _change_dir {
     cwd() eq $dir ? return 1 : return 0;
 }
 
-sub BUILD {
+sub BUILD
+{
     my $self = shift;
 
     # does username exist?
-    if ( $self->DEBUG ) {
+    if ( $self->DEBUG )
+    {
         print "Initializing object with username: " . $self->username . "\n";
     }
     croak "no such username\n" unless getpwnam( $self->username );
 
-    $self->uid( ( getpwnam( $self->username ) )[2] );
+    $self->uid( ( getpwnam( $self->username ) )[ 2 ] );
     $self->proc( Unicorn::Manager::CLI::Proc->new ) unless $self->proc;
 
 }
